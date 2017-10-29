@@ -47,7 +47,7 @@ export class FirebaseProvider {
   }
 
   getEvents(project) {
-    const path = '/Projects/' + project.key + '/Events/'
+    const path = '/Projects/' + project.key + '/Activities/'
     return this.afd.list(path)
       .snapshotChanges()
       .map(changes => {
@@ -60,9 +60,16 @@ export class FirebaseProvider {
 
 
   /* Use this method to add a event Json into the database tree */
-  addEvent(project,event) {
-    const path = '/Projects/' + project.key + '/Events/'
-    this.afd.list(path).push(event);
+  addActivity(project,activity) {
+    const path = '/Projects/' + project.key + '/Activities/'
+    this.afd.list(path).push(activity);
+    // this.afd.list('/shoppingItems/').snapshotChanges();
+  }
+
+  /* Use this method to add a event Json into the database tree */
+  deleteActivity(project,activity) {
+    const path = '/Projects/' + project.key + '/Activities/'
+    this.afd.list(path).push(activity);
     // this.afd.list('/shoppingItems/').snapshotChanges();
   }
 }

@@ -37,7 +37,7 @@ export class HomePage {
     this.firebaseProvider.removeProject(item);
   }
   addEvent(item){
-    this.firebaseProvider.addEvent(item, this.newEvent);
+    this.firebaseProvider.addActivity(item, this.newEvent);
   }
 
 }
