@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+import { ProjectPage } from '../project/project';
 
 @Component({
   selector: 'page-list',
@@ -21,16 +22,16 @@ export class ListPage {
     this.items = [];
     for (let i = 1; i < 11; i++) {
       this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
+        title: 'Project ' + i,
+        note: 'This is project #' + i,
         icon: this.icons[Math.floor(Math.random() * this.icons.length)]
       });
     }
   }
 
   itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push(ListPage, {
+    // Go to ProjectPage
+    this.navCtrl.push(ProjectPage, {
       item: item
     });
   }

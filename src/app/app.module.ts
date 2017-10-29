@@ -6,6 +6,7 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { ActivityFormPage } from '../pages/activityForm/activityForm';
+import { ProjectPage } from '../pages/project/project';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -30,7 +31,8 @@ export const firebaseConfig = {
     MyApp,
     HomePage,
     ListPage,
-    ActivityFormPage
+    ActivityFormPage,
+    ProjectPage
   ],
   imports: [
     BrowserModule,
@@ -44,7 +46,8 @@ export const firebaseConfig = {
     MyApp,
     HomePage,
     ListPage,
-    ActivityFormPage
+    ActivityFormPage,
+    ProjectPage
   ],
   providers: [
     StatusBar,
