@@ -19,6 +19,18 @@ else
 
  */
 
+/*
+shortest path algorithm, maybe be adapted to do the opposite
+
+    Let d be an array of the same length as V; this will hold the shortest-path distances from s. Set d[s] = 0, all other d[u] = ∞.
+    Let p be an array of the same length as V, with all elements initialized to nil. Each p[u] will hold the predecessor of u in the shortest path from s to u.
+    Loop over the vertices u as ordered in V, starting from s:
+        For each vertex v directly following u (i.e., there exists an edge from u to v):
+            Let w be the weight of the edge from u to v.
+            Relax the edge: if d[v] > d[u] + w, set
+                d[v] ← d[u] + w,
+                p[v] ← u.
+ */
 
 //each node will need..
 //name
