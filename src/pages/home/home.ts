@@ -9,15 +9,19 @@ import { Observable } from 'rxjs/Observable';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  shoppingItems: Observable<any[]>;
+  items: Observable<any[]>;
   newItem = {
                 name: '',
                 events: ''
             };
+  newEvent = {
+    name: 'This is a test',
+    duration: 3
+  };
 
   constructor(public navCtrl: NavController, public firebaseProvider: FirebaseProvider) {
-    this.shoppingItems = this.firebaseProvider.getProjects();
-    this.shoppingItems.forEach(project => {
+    this.items = this.firebaseProvider.getProjects();
+    this.items.forEach(project => {
       console.log(project);
     })
     //console.log(this.shoppingItems);
@@ -32,4 +36,8 @@ export class HomePage {
     console.log(item);
     this.firebaseProvider.removeProject(item);
   }
+  addEvent(item){
+    this.firebaseProvider.addEvent(item, this.newEvent);
+  }
+
 }

@@ -45,5 +45,26 @@ export class FirebaseProvider {
   removeProject(item) {
     this.afd.list('/Projects/').remove(item.key);
   }
+
+  getEvents(project) {
+    const path = '/Projects/' + project.key + '/Events/'
+    return this.afd.list(path)
+      .snapshotChanges()
+      .map(changes => {
+        return changes.map(c => ({
+          key: c.payload.key,
+          ...c.payload.val()
+        }));
+      });
+  }
+
+
+  /* Use this method to add a event Json into the database tree */
+  addEvent(project,event) {
+    const path = '/Projects/' + project.key + '/Events/'
+    this.afd.list(path).push(event);
+    // this.afd.list('/shoppingItems/').snapshotChanges();
+  }
 }
+
 
