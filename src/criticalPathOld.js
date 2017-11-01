@@ -174,6 +174,7 @@ function KahnAlgorithm(eventSet){
 
 function checkForDependencies(node){
  if(node.dependencies==null)return node;
+ else return node.dependencies;
 }
 
 

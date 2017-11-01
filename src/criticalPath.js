@@ -87,31 +87,60 @@ exampleActivitySet.push(activityH);
 //endregion
 
 //find the longest path
-function longestPath(wGraph,startNode){
+function longestPath(startNode){
   var paths=[];
 
   function findAllPaths(startNode,currentCost){
-    for(var i=0;i<startNode.dependencies.length;i++){//for each of the dependency...
-      console.log(i);
-      var child=startNode.dependencies[i];
-
-
-      console.log(child);
-      console.log(currentCost);
-
-      if(child.dependencies===null){//if its null (meaning reach to other side of tree)...
-        paths.push(currentCost);//push to path variable
-      }else{
-        var nextChild=child.dependencies[0];
-        findAllPaths(wGraph[nextChild],currentCost+startNode.duration);//recursively call function
-      }
+    //base case
+    if(startNode.dependencies.length===0){
+      //console.log('base case');
+      paths.push(currentCost)
     }
-  }
+
+    //recursive case
+    for(var i=0;i<startNode.dependencies.length;i++){
+      //console.log('recursive case');
+      var child=startNode.dependencies[i];
+      findAllPaths(startNode.dependencies[i],currentCost+child.duration);
+    }
+  }//end findAllPaths function
+
+
 
   findAllPaths(startNode,1);
-  return Math.max.apply(Math,paths)
+  return Math.max.apply(Math,paths);
+}
+
+//calculate the shortest distance.
+function shortestPath(startNode){
+  var paths=[];
+
+  function findAllPaths(startNode,currentCost){
+    //base case
+    if(startNode.dependencies.length===0){
+      //console.log('base case');
+      paths.push(currentCost)
+    }
+
+    //recursive case
+    for(var i=0;i<startNode.dependencies.length;i++){
+      //console.log('recursive case');
+      var child=startNode.dependencies[i];
+      findAllPaths(startNode.dependencies[i],currentCost+child.duration);
+    }
+  }//end findAllPaths function
+
+
+
+  findAllPaths(startNode,1);
+  return Math.min.apply(Math,paths);
 }
 
 console.log(activityE);
-console.log(longestPath(exampleActivitySet,activityE));
+//input the last node into the function
+//objects have dependencies that are *before* the node, hence
+//instead of usually putting the head of the node into a longest
+//path algorithm, the last node is put in instead
+console.log('shortest path:'+shortestPath(activityE));
+console.log('longest path:'+longestPath(activityE));
 
