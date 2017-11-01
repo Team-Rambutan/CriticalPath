@@ -136,7 +136,9 @@ function shortestPath(startNode){
   return Math.min.apply(Math,paths);
 }
 
-console.log(activityE);
+//console.log(activityE);
+
+
 //input the last node into the function
 //objects have dependencies that are *before* the node, hence
 //instead of usually putting the head of the node into a longest
