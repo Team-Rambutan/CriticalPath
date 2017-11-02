@@ -5,38 +5,41 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
     <ion-title>Project Page</ion-title>
   </ion-navbar>
-
 </ion-header>
-
 
 <ion-content padding>
   <h2>Welcome to {{item.name}}</h2>
-  <ion-row>
-  <ion-col col-8>
-    <ion-item>
-      <ion-input type="text" [(ngModel)]="newEvent.name" placeholder="Event Name"></ion-input>
-    </ion-item>
-  </ion-col>
-  <ion-col col-2>
-    <button ion-button (click)="addEvent(item)">Add Event</button>
-  </ion-col>
-  </ion-row>
-  <p>Project description</p>
+  <ion-item>
+    <ion-label>Activity Name</ion-label>
+    <ion-input type="text" [(ngModel)]="newEvent.name" placeholder='Activity Name'></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Description</ion-label>
+    <ion-input type="text" [(ngModel)]="newEvent.description" placeholder='...'></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Duration</ion-label>
+    <ion-input type="number" [(ngModel)]="newEvent.duration" placeholder='Enter a number in hours'></ion-input>
+  </ion-item>
+  <button ion-button (click)="addActivity(item)" block clean>Add Activity</button>
 
   <ion-list>
   <ion-item-sliding *ngFor="let event of events | async">
     <ion-item>
-      {{ event.name }}
-      {{event.duration}}
+      <ion-row>
+        Name: {{ event.name }} <br />
+        Description: {{event.description}} <br />
+        Duration: {{event.duration}}
+      </ion-row>
     </ion-item>
     <ion-item-options side="right">
-      <button ion-button color="danger" icon-only (click)="removeEvent(event)"><ion-icon name="trash"></ion-icon></button>
+      <button ion-button color="danger" icon-only (click)="removeActivity(event)"><ion-icon name="trash"></ion-icon></button>
     </ion-item-options>
   </ion-item-sliding>
   </ion-list>
-
 </ion-content>

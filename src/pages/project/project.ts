@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FirebaseProvider } from './../../providers/firebase/firebase';
-import { HomePage } from '../home/home';
+import { ActivityFormPage } from '../activityForm/activityForm';
 import { Observable } from 'rxjs/Observable';
 import { AlertController } from 'ionic-angular';
 
@@ -23,12 +23,9 @@ import { AlertController } from 'ionic-angular';
 export class ProjectPage {
   events: Observable<any[]>;
   item: any;
-  newItem = {
-    name: '',
-    events: ''
-  };
   newEvent = {
     name: '',
+    description: '',
     duration: ''
   };
 
@@ -45,10 +42,10 @@ export class ProjectPage {
     console.log('ionViewDidLoad ProjectPage');
   }
 
-  addEvent(item){
+  addActivity(item){
     this.firebaseProvider.addActivity(item, this.newEvent);
   }
-  removeEvent(item) {
+  removeActivity(item) {
     console.log(item);
     console.log(item.name);
     console.log(this.newEvent);
@@ -66,7 +63,7 @@ export class ProjectPage {
         {
           text: 'Confirm',
           handler: () => {
-            this.firebaseProvider.deleteActivity(item, this.item);
+            this.firebaseProvider.deleteActivity(this.item, item);
           }
         }
       ]

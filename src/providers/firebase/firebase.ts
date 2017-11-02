@@ -70,17 +70,11 @@ export class FirebaseProvider {
 
   /* Use this method to add a event Json into the database tree */
   deleteActivity(project,activity) {
-    const path = '/Projects/' + activity.key + '/Activities/'
+    const path = '/Projects/' + project.key + '/Activities/'
     console.log(project.key);
     console.log(activity.key);
-    this.afd.list(path).remove(project.key);
+    this.afd.list(path).remove(activity.key);
   }
-  // deleteActivity(activity) {
-  //   const path = '/Projects/' + activity.key + '/Activities/'
-  //   console.log(activity.key);
-  //   this.afd.list(path).remove(activity.key);
-  //   // this.afd.list('/shoppingItems/').snapshotChanges();
-  // }
 }
 
 
