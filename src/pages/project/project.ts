@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { FirebaseProvider } from './../../providers/firebase/firebase';
+import { HomePage } from '../home/home';
+import { Observable } from 'rxjs/Observable';
+import { AlertController } from 'ionic-angular';
+
+
+
 
 /**
  * Generated class for the ProjectPage page.
@@ -14,15 +21,57 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'project.html',
 })
 export class ProjectPage {
+  events: Observable<any[]>;
   item: any;
-  event: any;
+  newItem = {
+    name: '',
+    events: ''
+  };
+  newEvent = {
+    name: '',
+    duration: ''
+  };
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController,public firebaseProvider: FirebaseProvider, public navParams: NavParams,public alertCtrl: AlertController) {
     this.item = navParams.get('item');
+    this.events = this.firebaseProvider.getEvents(this.item);
+    this.events.forEach(event => {
+      console.log(event);
+    })
+
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProjectPage');
+  }
+
+  addEvent(item){
+    this.firebaseProvider.addActivity(item, this.newEvent);
+  }
+  removeEvent(item) {
+    console.log(item);
+    console.log(item.name);
+    console.log(this.newEvent);
+    const alert = this.alertCtrl.create({
+      title: 'Confirm Deletion',
+      message: 'Do you want to delete: ' + item.name + '?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.firebaseProvider.deleteActivity(item, this.item);
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
 }

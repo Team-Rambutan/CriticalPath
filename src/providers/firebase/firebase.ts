@@ -62,16 +62,25 @@ export class FirebaseProvider {
   /* Use this method to add a event Json into the database tree */
   addActivity(project,activity) {
     const path = '/Projects/' + project.key + '/Activities/'
+    console.log(project.key);
+    console.log(activity);
     this.afd.list(path).push(activity);
     // this.afd.list('/shoppingItems/').snapshotChanges();
   }
 
   /* Use this method to add a event Json into the database tree */
   deleteActivity(project,activity) {
-    const path = '/Projects/' + project.key + '/Activities/'
-    this.afd.list(path).push(activity);
-    // this.afd.list('/shoppingItems/').snapshotChanges();
+    const path = '/Projects/' + activity.key + '/Activities/'
+    console.log(project.key);
+    console.log(activity.key);
+    this.afd.list(path).remove(project.key);
   }
+  // deleteActivity(activity) {
+  //   const path = '/Projects/' + activity.key + '/Activities/'
+  //   console.log(activity.key);
+  //   this.afd.list(path).remove(activity.key);
+  //   // this.afd.list('/shoppingItems/').snapshotChanges();
+  // }
 }
 
 

@@ -15,9 +15,28 @@
 
 <ion-content padding>
   <h2>Welcome to {{item.name}}</h2>
+  <ion-row>
+  <ion-col col-8>
+    <ion-item>
+      <ion-input type="text" [(ngModel)]="newEvent.name" placeholder="Event Name"></ion-input>
+    </ion-item>
+  </ion-col>
+  <ion-col col-2>
+    <button ion-button (click)="addEvent(item)">Add Event</button>
+  </ion-col>
+  </ion-row>
   <p>Project description</p>
-  <p>Event 1</p>
-  <p>Event 2</p>
-  <p>Event 3</p>
+
+  <ion-list>
+  <ion-item-sliding *ngFor="let event of events | async">
+    <ion-item>
+      {{ event.name }}
+      {{event.duration}}
+    </ion-item>
+    <ion-item-options side="right">
+      <button ion-button color="danger" icon-only (click)="removeEvent(event)"><ion-icon name="trash"></ion-icon></button>
+    </ion-item-options>
+  </ion-item-sliding>
+  </ion-list>
 
 </ion-content>
