@@ -4,6 +4,7 @@ import { NavController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
+import { ProjectPage } from '../project/project';
 
 @Component({
   selector: 'page-home',
@@ -59,6 +60,12 @@ export class HomePage {
 
   addEvent(item){
     this.firebaseProvider.addActivity(item, this.newEvent);
+  }
+  itemTapped(event, item) {
+    // Go to ProjectPage
+    this.navCtrl.push(ProjectPage, {
+      item: item
+    });
   }
 
 }

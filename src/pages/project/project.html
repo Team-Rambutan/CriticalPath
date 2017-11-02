@@ -5,19 +5,41 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>ProjectPage</ion-title>
+    <ion-title>Project Page</ion-title>
   </ion-navbar>
-
 </ion-header>
 
-
 <ion-content padding>
-  <h2>Welcome this is {{item.title}}</h2>
-  <p>Project description</p>
-  <p>Event 1</p>
-  <p>Event 2</p>
-  <p>Event 3</p>
+  <h2>Welcome to {{item.name}}</h2>
+  <ion-item>
+    <ion-label>Activity Name</ion-label>
+    <ion-input type="text" [(ngModel)]="newEvent.name" placeholder='Activity Name'></ion-input>
+  </ion-item>
 
+  <ion-item>
+    <ion-label>Description</ion-label>
+    <ion-input type="text" [(ngModel)]="newEvent.description" placeholder='...'></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Duration</ion-label>
+    <ion-input type="number" [(ngModel)]="newEvent.duration" placeholder='Enter a number in hours'></ion-input>
+  </ion-item>
+  <button ion-button (click)="addActivity(item)" block clean>Add Activity</button>
+
+  <ion-list>
+  <ion-item-sliding *ngFor="let event of events | async">
+    <ion-item>
+      <ion-row>
+        Name: {{ event.name }} <br />
+        Description: {{event.description}} <br />
+        Duration: {{event.duration}}
+      </ion-row>
+    </ion-item>
+    <ion-item-options side="right">
+      <button ion-button color="danger" icon-only (click)="removeActivity(event)"><ion-icon name="trash"></ion-icon></button>
+    </ion-item-options>
+  </ion-item-sliding>
+  </ion-list>
 </ion-content>

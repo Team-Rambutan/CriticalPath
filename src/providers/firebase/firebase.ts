@@ -62,6 +62,8 @@ export class FirebaseProvider {
   /* Use this method to add a event Json into the database tree */
   addActivity(project,activity) {
     const path = '/Projects/' + project.key + '/Activities/'
+    console.log(project.key);
+    console.log(activity);
     this.afd.list(path).push(activity);
     // this.afd.list('/shoppingItems/').snapshotChanges();
   }
@@ -69,8 +71,9 @@ export class FirebaseProvider {
   /* Use this method to add a event Json into the database tree */
   deleteActivity(project,activity) {
     const path = '/Projects/' + project.key + '/Activities/'
-    this.afd.list(path).push(activity);
-    // this.afd.list('/shoppingItems/').snapshotChanges();
+    console.log(project.key);
+    console.log(activity.key);
+    this.afd.list(path).remove(activity.key);
   }
 }
 
