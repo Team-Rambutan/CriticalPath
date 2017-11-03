@@ -48,7 +48,7 @@ var activityD={
 }
 
 var activityF={
-  name:"15",
+  name:"F",
   duration:3,
   description:"asdf",
   dependencies:[activityA],
@@ -68,6 +68,7 @@ var activityH={
   dependencies:[activityA],
   assignees:["aaa","bbb","ccc"],
 }
+
 var activityE={
   name:"E",
   duration:20,
@@ -86,57 +87,65 @@ exampleActivitySet.push(activityH);
 //console.log(exampleActivitySet);
 //endregion
 
-//find the longest path
+//calculates the longest path
 function longestPath(startNode){
   var paths=[];
+  var names=[];
+
 
   function findAllPaths(startNode,currentCost){
     //base case
-    if(startNode.dependencies.length===0){
+    if(startNode.dependencies.length===0){//if node has no dependencies (is at the beginning)...
       //console.log('base case');
-      paths.push(currentCost)
+      paths.push(currentCost);
+      names.push(startNode.name,'end of path');
     }
 
     //recursive case
-    for(var i=0;i<startNode.dependencies.length;i++){
-      //console.log('recursive case');
+    //console.log('recursive case');
+    for(var i=0;i<startNode.dependencies.length;i++){//for each edge (dependencies) of the node...
       var child=startNode.dependencies[i];
-      findAllPaths(startNode.dependencies[i],currentCost+child.duration);
+      names.push(startNode.name);
+      findAllPaths(startNode.dependencies[i],currentCost+child.duration);//recursively find the next node until base case is satisfied
     }
   }//end findAllPaths function
 
 
-
-  findAllPaths(startNode,1);
+  findAllPaths(startNode,startNode.duration);
+  //console.log(paths);
+  console.log(names);
   return Math.max.apply(Math,paths);
 }
 
 //calculate the shortest distance.
 function shortestPath(startNode){
   var paths=[];
+  var names=[];
+
 
   function findAllPaths(startNode,currentCost){
     //base case
-    if(startNode.dependencies.length===0){
+    if(startNode.dependencies.length===0){//if node has no dependencies (is at the beginning)...
       //console.log('base case');
-      paths.push(currentCost)
+      paths.push(currentCost);
+      names.push(startNode.name,'end of path');
     }
 
     //recursive case
-    for(var i=0;i<startNode.dependencies.length;i++){
-      //console.log('recursive case');
+    //console.log('recursive case');
+    for(var i=0;i<startNode.dependencies.length;i++){//for each edge (dependencies) of the node...
       var child=startNode.dependencies[i];
-      findAllPaths(startNode.dependencies[i],currentCost+child.duration);
+      names.push(startNode.name);
+      findAllPaths(startNode.dependencies[i],currentCost+child.duration);//recursively find the next node until base case is satisfied
     }
   }//end findAllPaths function
 
 
-
-  findAllPaths(startNode,1);
+  findAllPaths(startNode,startNode.duration);
+  //console.log(paths);
+  console.log(names);
   return Math.min.apply(Math,paths);
 }
-
-//console.log(activityE);
 
 
 //input the last node into the function
