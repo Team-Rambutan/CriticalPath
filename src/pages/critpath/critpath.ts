@@ -95,4 +95,23 @@ export class CritpathPage {
     console.log(this.cpProvider.shortAndLong(list,activityE));
   }
 
+  test2() {
+    const sorted = this.cpProvider.topologicalSort([
+      {
+        name: 'A',
+        dependencies: ['B', 'C']
+      },
+      {
+        name: 'B',
+        dependencies: []
+      },
+      {
+        name: 'C',
+        dependencies: []
+      }
+    ]);
+
+    console.log(sorted);
+  }
+
 }

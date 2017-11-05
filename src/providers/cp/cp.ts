@@ -38,4 +38,32 @@ export class CpProvider {
   }
 
 
+
+
+  removeEdge(adjacentVertex, node) {
+    node.dependencies = node.dependencies.filter(vertex => vertex !== adjacentVertex);
+    return node;
+  }
+
+  topologicalSort(nodes: any[]) {
+    console.log(nodes);
+    const hasIncomingEdges = node => node.dependencies.length;
+    const noIncomingEdges = node => !node.dependencies.length;
+    let noEdges = nodes.filter(noIncomingEdges),
+      withEdges = nodes.filter(hasIncomingEdges),
+      sorted = [];
+
+    while (noEdges.length) {
+      const node = noEdges.pop();
+      sorted.push(node);
+
+      withEdges = withEdges.map( this.removeEdge.bind(null, node.name) );
+      const newNoEdges = withEdges.filter(noIncomingEdges);
+      noEdges = noEdges.concat(newNoEdges);
+
+      withEdges = withEdges.filter(hasIncomingEdges);
+    }
+    return sorted.map(node => node.name);
+  }
+
 }

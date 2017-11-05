@@ -6,8 +6,6 @@ import { Observable } from 'rxjs/Observable';
 import { AlertController } from 'ionic-angular';
 
 
-
-
 /**
  * Generated class for the ProjectPage page.
  *
