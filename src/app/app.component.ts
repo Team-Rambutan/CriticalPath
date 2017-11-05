@@ -7,6 +7,7 @@ import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { ActivityFormPage } from '../pages/activityForm/activityForm';
 import { ProjectPage } from '../pages/project/project';
+import {CritpathPage} from "../pages/critpath/critpath";
 
 @Component({
   templateUrl: 'app.html'
@@ -26,7 +27,8 @@ export class MyApp {
       { title: 'Home', component: HomePage },
       { title: 'List', component: ListPage },
       { title: 'Event Form', component: ActivityFormPage},
-      { title: 'Project Page', component: ProjectPage}
+      { title: 'Project Page', component: ProjectPage},
+      { title: 'Critical Path page', component: CritpathPage}
 
     ];
 
