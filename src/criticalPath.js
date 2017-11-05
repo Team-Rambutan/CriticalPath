@@ -143,53 +143,15 @@ function shortestPath(startNode){
 
   findAllPaths(startNode,startNode.duration);
   //console.log(paths);
-  //console.log(names);
-  console.log(paths);
+  console.log(names);
   return Math.min.apply(Math,paths);
 }
-
-//returns all possible durations
-function nameAndDurations(startNode){
-  var paths=[];
-  var names=[];
-
-  function findAllPaths(startNode,currentCost){
-    //base case
-    if(startNode.dependencies.length===0){//if node has no dependencies (is at the beginning)...
-      //console.log('base case');
-      paths.push(currentCost);
-      var currentCostObject=[currentCost];
-      //console.log(currentCostObject);
-      //paths.forEach(function(item,index){item.push(currentCostObject);});
-
-      names.push((startNode.name,currentCost));
-      //names.forEach(function(item,index){console.log(item+' at index:'+index);});
-    }
-
-    //recursive case
-    //console.log('recursive case');
-    for(var i=0;i<startNode.dependencies.length;i++){//for each edge (dependencies) of the node...
-      var child=startNode.dependencies[i];
-      names.push(startNode.name);
-      findAllPaths(startNode.dependencies[i],currentCost+child.duration);//recursively find the next node until base case is satisfied
-    }
-  }//end findAllPaths function
-
-  findAllPaths(startNode,startNode.duration);
-  //console.log(paths);
-  console.log(names);
-  //console.log(paths);
-
-
-  return ('');
-}
-
 
 
 //input the last node into the function
 //objects have dependencies that are *before* the node, hence
 //instead of usually putting the head of the node into a longest
 //path algorithm, the last node is put in instead
-//console.log('shortest path:'+shortestPath(activityE));
-//console.log('longest path:'+longestPath(activityE));
-console.log(nameAndDurations(activityE));
+console.log('shortest path:'+shortestPath(activityE));
+console.log('longest path:'+longestPath(activityE));
+
