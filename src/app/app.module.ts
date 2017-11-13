@@ -7,6 +7,7 @@ import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { ActivityFormPage } from '../pages/activityForm/activityForm';
 import { ProjectPage } from '../pages/project/project';
+import { CritpathPage } from '../pages/critpath/critpath';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -15,6 +16,7 @@ import { HttpModule } from '@angular/http';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireModule } from 'angularfire2';
 import { FirebaseProvider } from '../providers/firebase/firebase';
+import { CpProvider } from '../providers/cp/cp';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBa-3KkWI1xUxVeqQG2r1T4_fS0MBUX75U",
@@ -32,7 +34,8 @@ export const firebaseConfig = {
     HomePage,
     ListPage,
     ActivityFormPage,
-    ProjectPage
+    ProjectPage,
+    CritpathPage
   ],
   imports: [
     BrowserModule,
@@ -47,13 +50,15 @@ export const firebaseConfig = {
     HomePage,
     ListPage,
     ActivityFormPage,
-    ProjectPage
+    ProjectPage,
+    CritpathPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    FirebaseProvider
+    FirebaseProvider,
+    CpProvider
   ]
 })
 export class AppModule {}

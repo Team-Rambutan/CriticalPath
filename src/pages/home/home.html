@@ -22,7 +22,8 @@
   </ion-row>
 
   <ion-list>
-    <ion-item-sliding *ngFor="let project of projects | async">
+    <!--<ion-item-sliding *ngFor="let item of items | async" (click)="itemTapped($event, item)">-->
+    <ion-item-sliding *ngFor="let project of projects | async" (click)="itemTapped($event, project)">
       <ion-item>
         {{ project.name }}
       </ion-item>
