@@ -227,7 +227,7 @@ function forwardPassCalculation(topoEventSet){
   while(inProcessNodes.length>0){
     var nodeU=inProcessNodes.shift();
     if(!nodeU.hasOwnProperty('earliestStart')){nodeU.earliestStart=1};//case for the first node
-    nodeU.earliestEnd=(nodeU.earliestStart)+nodeU.duration;//calculate the earliest end time
+    nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;//calculate the earliest end time
     //console.log(nodeU);
     //console.log(inProcessNodes);
 
@@ -240,13 +240,13 @@ function forwardPassCalculation(topoEventSet){
         //calculate the earliest start times...
         if(!nodeV.hasOwnProperty('earliestStart')){//if earliest start time isn't initialized yet...
           //console.log(nodeV);
-          nodeV.earliestStart=nodeU.earliestEnd;//calculate start time
+          nodeV.earliestStart=(nodeU.earliestEnd+1);//calculate start time
         }else if(nodeU.earliestEnd>nodeV.earliestStart){//else, compare start times (case where there are multiple edges
-          nodeV.earliestStart=nodeU.earliestEnd;
+          nodeV.earliestStart=(nodeU.earliestEnd+1);
         }
 
         //calculate the earliest end time...
-        nodeV.earliestEnd=nodeV.earliestStart+nodeV.duration;
+        nodeV.earliestEnd=(nodeV.earliestStart-1)+nodeV.duration;
         ///console.log(nodeV);
 
 
@@ -309,7 +309,7 @@ function backwardPassCalculation(forwardPassResult){
   //initialize the first node 'U',calculate the latest times,
   var nodeU=forwardPassResult.pop();
   nodeU.latestEnd=nodeU.earliestEnd;
-  nodeU.latestStart=nodeU.latestEnd-nodeU.duration;
+  nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
   //console.log(nodeU);
 
 
@@ -322,13 +322,13 @@ function backwardPassCalculation(forwardPassResult){
     //calculate the latest end times...
     if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
       //console.log(nodeV);
-      nodeV.latestEnd = nodeU.latestStart;//calculate latest end time
+      nodeV.latestEnd = (nodeU.latestStart-1);//calculate latest end time
     } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
-      nodeV.latestEnd = nodeU.latestStart;
+      nodeV.latestEnd = (nodeU.latestStart-1);
     }
     //console.log(nodeV);
     //calculate the latest start time...
-    nodeV.latestStart = nodeV.latestEnd - (nodeV.duration);
+    nodeV.latestStart = nodeV.latestEnd - (nodeV.duration-1);
     //console.log(nodeV);
 
     nodesToProcess.push(nodeV);
@@ -352,6 +352,7 @@ function backwardPassCalculation(forwardPassResult){
   //console.log(nodesToProcess);
 
   console.log(finishedNodes);
+  return finishedNodes;
 }
 
 //given object1, checks if object2 exist in object1's dependency list
@@ -445,5 +446,6 @@ function clone(src) {
 
 //forwardPassCalculation(exampleActivitySet);//okay i think this works
 //backwardPassCalculation(exampleActivitySet);//should only works with forwardPassCalculation result
-calculateTimes(exampleActivitySet);
+//(exampleActivitySet);
+console.log(calculateTimes(exampleActivitySet));
 //console.log(forwardPassCalculation((exampleActivitySet)));
