@@ -268,3 +268,47 @@ calculateTimes(exampleActivitySet);
   //console.log(finishedNodes);
 
 
+===================================================================================================================================
+
+function shortestPathAlgorithm(nodeSet){
+
+  //Let d be an array of the same length as V; this will hold the shortest-path distances from s. Set d[s] = 0, all other d[u] = ∞.
+  let d=nodeSet;
+  //d.push(0);
+
+  //Let p be an array of the same length as V, with all elements initialized to nil. Each p[u] will hold the predecessor of u in the shortest path from s to u.
+  let p=[];
+
+  //Loop over the vertices u as ordered in V, starting from s:
+  while(nodeSet.length>0){
+    let verticesU=nodeSet.shift();
+    //console.log(verticesU);
+
+    //For each vertex v directly following u (i.e., there exists an edge from u to v):
+    for(let i=0;i<nodeSet.length;i++){
+      let vertices=nodeSet[i];
+      for(let j=0;j<vertices.dependencies.length;j++){
+        if(verticesU===vertices.dependencies[j]){
+          let verticesV=vertices[i];
+
+          //Let w be the weight of the edge from u to v.
+          let weight=verticesU.duration;
+
+          //Relax the edge: if d[v] > d[u] + w, set
+          //console.log(d[verticesV]>d[verticesU]+weight);
+          if(d[verticesV].duration>d[verticesU].duration+weight){
+
+            //d[v] ← d[u] + w,
+            d[verticesV].duration=d[verticesU].duration;
+            //p[v] ← u.
+            p[verticesV]=verticesU;
+          }
+        }
+      }
+    }
+  }
+
+  console.log(d);
+  console.log(p);
+}
+shortestPathAlgorithm(exampleActivitySet);

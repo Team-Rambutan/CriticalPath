@@ -87,66 +87,17 @@ exampleActivitySet.push(activityE);
 //console.log(exampleActivitySet);
 //endregion
 
-var exampleActivitySet2=[
-  { name: 'A',
-  duration: 10,
-  description: 'asdf',
-  dependencies: [],
-  assignees: [ 'aaa', 'bbb', 'ccc' ],
-  earliestStart: 0,
-  earliestEnd: 10 },
-  { name: 'F',
-    duration: 15,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 10,
-    earliestEnd: 25 },
-  { name: 'B',
-    duration: 20,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 10,
-    earliestEnd: 30 },
-  { name: 'H',
-    duration: 15,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 10,
-    earliestEnd: 25 },
-  { name: 'G',
-    duration: 5,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 35,
-    earliestEnd: 40 },
-  { name: 'C',
-    duration: 5,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 30,
-    earliestEnd: 35 },
-  { name: 'D',
-    duration: 10,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 35,
-    earliestEnd: 45 },
-  { name: 'E',
-    duration: 20,
-    description: 'asdf',
-    dependencies: [],
-    assignees: [ 'aaa', 'bbb', 'ccc' ],
-    earliestStart: 45,
-    earliestEnd: 65 },];
+//example output
+console.log(longestPath(calculateTimes(exampleActivitySet)));
+console.log(longestPathDuration(exampleActivitySet[exampleActivitySet.length-1]));
+
+//important functions
+//longestPath(calculatedActivitySet)
+//calculateTimes(topologicallySortedActivitySet)
+//longestPathDuration(activitySet)
 
 //calculates the longest path
-function longestPath(startNode){
+function longestPathDuration(startNode){
   var paths=[];
   var names=[];
 
@@ -161,7 +112,7 @@ function longestPath(startNode){
 
     //recursive case
     //console.log('recursive case');
-    for(var i=0;i<startNode.dependencies.length;i++){//for each edge (dependencies) of the node...
+    for(var i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
       var child=startNode.dependencies[i];
       names.push(startNode.name);
       findAllPaths(startNode.dependencies[i],currentCost+child.duration);//recursively find the next node until base case is satisfied
@@ -171,15 +122,14 @@ function longestPath(startNode){
 
   findAllPaths(startNode,startNode.duration);
   //console.log(paths);
-  console.log(names);
+  //console.log(names);
   return Math.max.apply(Math,paths);
 }
 
 //calculate the shortest distance.
-function shortestPath(firstStartNode){
+function shortestPathDuration(firstStartNode){
   var paths=[];
   var names=[];
-
 
   function findAllPaths(startNode,currentCost){
     //base case
@@ -191,7 +141,7 @@ function shortestPath(firstStartNode){
 
     //recursive case
     //console.log('recursive case');
-    for(var i=0;i<startNode.dependencies.length;i++){//for each edge (dependencies) of the node...
+    for(var i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
       var child=startNode.dependencies[i];
       names.push(startNode.name);
       findAllPaths(child,currentCost+child.duration);//recursively find the next node until base case is satisfied
@@ -211,7 +161,6 @@ function calculateTimes(topoEventSet){
   var backwardPassResult=backwardPassCalculation(forwardPassResult);
   return backwardPassResult;
 }
-
 
 //forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
 function forwardPassCalculation(topoEventSet){
@@ -351,13 +300,30 @@ function backwardPassCalculation(forwardPassResult){
   finishedNodes.push(nodesToProcess.shift());
   //console.log(nodesToProcess);
 
-  console.log(finishedNodes);
+  //console.log(finishedNodes);
   return finishedNodes;
+}
+
+//given a list of activities with calculated earliest/latest start/end times, will return a longest path list
+function longestPath(activityList){
+  let result=[];
+  for(let i=0;i<activityList.length;i++){
+    //console.log(i);
+    let condition1=activityList[i].earliestEnd-activityList[i].latestEnd===0;
+    let condition2=activityList[i].earliestStart-activityList[i].latestStart===0;
+
+    if(condition1&&condition2){
+      result.push(activityList[i]);
+    }
+  }
+
+  result.reverse();
+  return result;
 }
 
 //given object1, checks if object2 exist in object1's dependency list
 function checkForDependencyMatch(object1,object2){
-  for(var i=0;i<object1.dependencies.length;i++){
+  for(var i=0; i<object1.dependencies.length; i++){
     //console.log('checking');
     //console.log(object1.dependencies[i]);
     if(object1.dependencies[i]===object2)
@@ -386,8 +352,6 @@ function containsName(a,obj){
   }
   return false;
 }
-
-
 
 //cloning objects
 //https://davidwalsh.name/javascript-clone
@@ -446,6 +410,6 @@ function clone(src) {
 
 //forwardPassCalculation(exampleActivitySet);//okay i think this works
 //backwardPassCalculation(exampleActivitySet);//should only works with forwardPassCalculation result
-//(exampleActivitySet);
-console.log(calculateTimes(exampleActivitySet));
+calculateTimes(exampleActivitySet);
+//console.log(calculateTimes(exampleActivitySet));
 //console.log(forwardPassCalculation((exampleActivitySet)));

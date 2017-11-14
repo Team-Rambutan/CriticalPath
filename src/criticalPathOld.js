@@ -66,7 +66,7 @@ var activityD={
 
 var activityF={
   name:"F",
-  duration:3,
+  duration:15,
   description:"asdf",
   dependencies:[activityA],
   assignees:["aaa","bbb","ccc"],
@@ -106,199 +106,24 @@ exampleActivitySet.push(activityH);
 
 
 
-function calculateStartEndtimes(eventSet){
-  var forwardPass=forwardPassCalculation((eventSet));
-  var backwardPass=backwardPassCalculation((forwardPass));
+/*
+1) Initialize dist[] = {NINF, NINF, ….} and dist[s] = 0 where s is the source vertex. Here NINF means negative infinite.
+2) Create a toplogical order of all vertices.
+3) Do following for every vertex u in topological order.
+………..Do following for every adjacent vertex v of u
+………………if (dist[v] < dist[u] + weight(u, v))
+………………………dist[v] = dist[u] + weight(u, v)
+ */
+function longestPath(activityList){
+  let result=[];
+  for(let i=0;i<activityList.length;i++){
 
-  return backwardPass;
-}
-
-
-//calculates the earliest an event can start
-function forwardPassCalculation(eventSet) {
-  var calculatedNodes=[];
-  var noIncomingEdgeSet=[];
-  noIncomingEdgeSet=checkForNonDependencies(eventSet);//pushes nodes dont have any edges
-  //console.log(noIncomingEdgeSet);
-
-  // console.log(node);
-  //calculates beginning and end times, and adds as a property
-  while(noIncomingEdgeSet.length>0){
-
-    //node 'n'
-    var node=noIncomingEdgeSet.shift();// .shift takes from the first index
-    if(node.dependencies.length===0){node.earliestStart=0}
-    node.earliestEnd=node.earliestStart+node.duration;
-    calculatedNodes.push(node);
-    //check node dependency and remove edges
-    for(var m=0;m<eventSet.length;m++){//for each node...
-      //console.log(eventSet[m]);
-      //console.log('comparing');
-      //console.log(eventSet[m]);
-      //console.log('with');
-      //console.log(node);
-      //console.log(m);
-      if (checkForDependencyMatch(eventSet[m],node)) {//if node eventSet[m] connects with 'node' (n)..
-        if(eventSet[m].earliestStart===null){//case where earliest start property hasnt been initialized
-          eventSet[m].earliestStart=node.earliestEnd;
-        }else if(eventSet[m].earliestStart<node.earliestEnd){//if the eventSet[m] node start earlier than 'node' 'n', replace the starting time
-          eventSet[m].earliestStart=node.earliestEnd;
-        }
+    let condition1=activityList[i].earliestEnd-activityList[i].latestEnd===0;
+    let condition2=activityList[i].earliestStart-activityList[i].latestStart===0;
 
 
-        //console.log('dependency match');
-        //console.log(eventSet[m]);
-
-
-
-        //delete eventSet[m].dependencies[node];//remove the edge
-        //console.log(eventSet[m].dependencies.indexOf(node));
-        var index=eventSet[m].dependencies.indexOf(node);
-        eventSet[m].dependencies.splice(index,1);
-        //eventSet[m].dependencies[node]=null;
-
-        //console.log(m);
-        //console.log(eventSet[m]);
-        if (eventSet[m].dependencies.length>0) {//if m has no other incoming edges then
-          noIncomingEdgeSet.push(eventSet[m])//insert m into noIncomingEdgeSet
-        }
-        //console.log(eventSet[m]);
-      }
+    if(condition1&&condition2){
+      result.push(activityList[i]);
     }
-  }
-
-  //checks for loops/cycles, otherwise returns the same set of nodes with added properties
-  for(var i=0;i<eventSet.length;i++){
-    if(eventSet[i].dependencies.length>0){
-      console.log('still has dependencies')
-      console.log(eventSet[i]);
-      //return 'wut';
-    }
-  }
-  //console.log(calculatedNodes);
-  return calculatedNodes;
-}
-
-function checkForDependencyMatch(object1,object2){
-  for(var i=0;i<object1.dependencies.length;i++){
-    //console.log('checking');
-    //console.log(object1.dependencies[i]);
-    if(object1.dependencies[i]===object2){
-      return true;
-    }
-  }
-  return false;
-}
-
-
-
-//basically like the forward pass, but will go backwards going through child nodes first
-function backwardPassCalculation(eventSet){
-  var calculatedNodes=[];
-  var incomingEdgeSet=[];
-  incomingEdgeSet.push(eventSet.pop());//starts with the last node
-
-  while(incomingEdgeSet!=null){
-    var node=incomingEdgeSet.pop();
-
-    //calculates beginning and end times, and adds as a property
-    if(node.latestEnd===null)node.latestEnd=node.earliestEnd;//if not null, it was already added when checking for dependency
-    node.latestStart=node.latestEnd-node.duration;
-
-    calculatedNodes.push(node);
-
-
-    //check for parent nodes
-    for(m=0;m<eventSet.length;m++){
-      for(i=0;i<node.dependencies.length;i++){
-        if(node.dependencies[i]==eventSet[m].name){
-
-          //case check, where more than one edge is found
-          if(eventSet[m].latestEnd==null)eventSet[m].latestEnd=node.latestStart;
-          else if(eventSet[m].latestEnd>node.latestStart)eventSet[m].latestStart=node.latestStart;//if the current node start earlier than the current node, replace the starting time
-
-          delete eventSet[m].dependencies[node.name];//remove the edge
-        }
-
-        incomingEdgeSet.push(eventSet[node.dependencies[i]]);//add to list
-      }
-    }
-  }
-
-  //checks for loops/cycles, otherwise returns the same set of nodes with added properties
-  for(i=0;i<eventSet.length;i++){
-    if(eventSet[i].dependencies!=null)return 'wut';
-    else return calculatedNodes;
-  }
-}
-
-function checkForDependencies(nodeSet){
-  var list=[];
-  for(var i=0;i<nodeSet.length;i++){
-    if(nodeSet[i].dependencies.length>=0){
-      list.push(nodeSet[i]);
-    }
-  }
-  return list;
-}
-
-function checkForNonDependencies(nodeSet){
-  var list=[];
-  for(var i=0;i<nodeSet.length;i++){
-    if(nodeSet[i].dependencies.length===0){
-      list.push(nodeSet[i]);
-    }
-  }
-  return list;
-
-}
-
-console.log(forwardPassCalculation(exampleActivitySet));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function findPaths(activitySet,beginningActivity,endingActivity){
-  //base case
-  if(beginningActivity==endingActivity){
-    return beginningActivity;
-  }
-
-
-  //recursive case
-  var candidatePathList=[];
-  for(d=0;endingActivity["dependency"].length;d++){
-    var currentActivity=activitySet[endingActivity["dependency"].name];
-
-    candidatePathList.push(endingActivity);
-    candidatePathList.unshift(findPaths(activitySet,beginningActivity,currentActivity));
-
-    return candidatePathList;
   }
 }
