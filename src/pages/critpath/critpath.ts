@@ -17,6 +17,7 @@ import { CpProvider } from './../../providers/cp/cp';
 export class CritpathPage {
 
   list: any[];
+  sorted: any[]
   constructor(public navCtrl: NavController, public navParams: NavParams, public cpProvider: CpProvider) {
     this.list = [];
   }
@@ -164,9 +165,13 @@ export class CritpathPage {
     this.list.push(activityF);
     this.list.push(activityG);
     this.list.push(activityH);
-    const sorted = this.cpProvider.topologicalSort(this.list);
+    this.sorted = this.cpProvider.topologicalSort(this.list);
 
-    console.log(sorted);
+    console.log(this.sorted);
+    // const path = this.cpProvider.calculateTimes(this.cpProvider.topologicalSort(this.list));
+    // console.log(path);
+    let cal = this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.sorted)));
+    console.log(cal);
     this.list = [];
   }
 
@@ -225,23 +230,22 @@ export class CritpathPage {
     let activityE={
       name:"E",
       duration:20,
-      description:"asdf",
       dependencies:[activityD,activityG,activityH],
       assignees:["aaa","bbb","ccc"],
     };
+
     this.list.push(activityA);
+    this.list.push(activityF);
     this.list.push(activityB);
+    this.list.push(activityH);
+    this.list.push(activityG);
     this.list.push(activityC);
     this.list.push(activityD);
     this.list.push(activityE);
-    this.list.push(activityF);
-    this.list.push(activityG);
-    this.list.push(activityH);
-    const top = this.cpProvider.topologicalSort(this.list);
-    console.log(top);
-    const path = this.cpProvider.calculateTimes(top);
-    console.log(path);
+    let cal = this.cpProvider.calculateTimes(this.list);
+    console.log(cal);
     this.list = [];
+
   }
 
 }

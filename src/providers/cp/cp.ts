@@ -103,80 +103,76 @@ export class CpProvider {
   }
 
 //forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
-  forwardPassCalculation(topoEventSet){
-    function clone(src) {
+  //forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
+   forwardPassCalculation(topoEventSet){
+     function clone(src) {
+       function mixin(dest, source, copyFunc) {
+         let name, s, i, empty = {};
+         for(name in source){
+           // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
+           // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
+           // don't overwrite it with the toString() method that source inherited from Object.prototype
+           s = source[name];
+           if(!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))){
+             dest[name] = copyFunc ? copyFunc(s) : s;
+           }
+         }
+         return dest;
+       }
 
-
-      if(!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]"){
-        // null, undefined, any non-object, or function
-        return src;	// anything
-      }
-      if(src.nodeType && "cloneNode" in src){
-        // DOM Node
-        return src.cloneNode(true); // Node
-      }
-      if(src instanceof Date){
-        // Date
-        return new Date(src.getTime());	// Date
-      }
-      if(src instanceof RegExp){
-        // RegExp
-        return new RegExp(src);   // RegExp
-      }
-      var r, i, l;
-      if(src instanceof Array){
-        // array
-        r = [];
-        for(i = 0, l = src.length; i < l; ++i){
-          if(i in src){
-            r.push(clone(src[i]));
-          }
-        }
-        // we don't clone functions for performance reasons
-        //		}else if(d.isFunction(src)){
-        //			// function
-        //			r = function(){ return src.apply(this, arguments); };
-      }else{
-        // generic objects
-        r = src.constructor ? new src.constructor() : {};
-      }
-      return mixin(r, src, clone);
-
-    }
-
-    function mixin(dest, source, copyFunc) {
-      var name, s, i, empty = {};
-      for(name in source){
-        // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
-        // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
-        // don't overwrite it with the toString() method that source inherited from Object.prototype
-        s = source[name];
-        if(!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))){
-          dest[name] = copyFunc ? copyFunc(s) : s;
-        }
-      }
-      return dest;
-    }
-    //console.log(topoEventSet);
-
-    let originalSet= clone(topoEventSet);//keeps an original record of dependencies
-    let finishedNodes=[];
-    let inProcessNodes=[];
+       if(!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]"){
+         // null, undefined, any non-object, or function
+         return src;	// anything
+       }
+       if(src.nodeType && "cloneNode" in src){
+         // DOM Node
+         return src.cloneNode(true); // Node
+       }
+       if(src instanceof Date){
+         // Date
+         return new Date(src.getTime());	// Date
+       }
+       if(src instanceof RegExp){
+         // RegExp
+         return new RegExp(src);   // RegExp
+       }
+       let r, i, l;
+       if(src instanceof Array){
+         // array
+         r = [];
+         for(i = 0, l = src.length; i < l; ++i){
+           if(i in src){
+             r.push(clone(src[i]));
+           }
+         }
+         // we don't clone functions for performance reasons
+         //		}else if(d.isFunction(src)){
+         //			// function
+         //			r = function(){ return src.apply(this, arguments); };
+       }else{
+         // generic objects
+         r = src.constructor ? new src.constructor() : {};
+       }
+       return mixin(r, src, clone);
+     }
+    console.log(topoEventSet);
+    var originalSet= clone(topoEventSet);//keeps an original record of dependencies
+    var finishedNodes=[];
+    var inProcessNodes=[];
 
     //initialize the first node
     inProcessNodes.push(topoEventSet.shift());
 
-
     while(inProcessNodes.length>0){
-      let nodeU=inProcessNodes.shift();
+      var nodeU=inProcessNodes.shift();
       if(!nodeU.hasOwnProperty('earliestStart')){nodeU.earliestStart=1};//case for the first node
       nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;//calculate the earliest end time
       //console.log(nodeU);
       //console.log(inProcessNodes);
 
 
-      for(let i=0;i<topoEventSet.length;i++){//for each node in the topologically sorted node set...
-        let nodeV=topoEventSet[i];
+      for(var i=0;i<topoEventSet.length;i++){//for each node in the topologically sorted node set...
+        var nodeV=topoEventSet[i];
 
 
         if(this.checkForDependencyMatch(nodeV,nodeU)){//For each vertex v directly following u...
@@ -194,7 +190,7 @@ export class CpProvider {
 
 
           //remove the edge/dependency
-          let index = topoEventSet[i].dependencies.indexOf(nodeU);
+          var index = topoEventSet[i].dependencies.indexOf(nodeU);
           topoEventSet[i].dependencies.splice(index,1);
 
           //push nodeV into inProcessNodes to turn into nodeU's
@@ -205,22 +201,24 @@ export class CpProvider {
       //checks if node already has been calculated due to multiple dependencies, might have an updated earliestStart/earliestEnd
       if(this.contains(finishedNodes,nodeU)){
         //console.log(nodeU);
-        let index = finishedNodes.indexOf(nodeU);
+        var index = finishedNodes.indexOf(nodeU);
         finishedNodes.splice(index,1,nodeU);
         //console.log(finishedNodes);
       }else{
         finishedNodes.push(nodeU);
       }
 
+
+
       //console.log(inProcessNodes.length);
     }
 
     //add calculated times to originalSet
-    for(let i=0;i<originalSet.length;i++){
+    for(var i=0;i<originalSet.length;i++){
       //console.log(i);
-      let node=originalSet[i];
+      var node=originalSet[i];
       //console.log(originalSet);
-      let temp=this.containsName(finishedNodes,node);
+      var temp=this.containsName(finishedNodes,node);
       node.earliestStart=temp.earliestStart;
       node.earliestEnd=temp.earliestEnd;
     }
@@ -407,64 +405,13 @@ export class CpProvider {
 
   topologicalSort(nodes: any[]) {
     console.log(nodes);
-    function clone(src) {
-      function mixin(dest, source, copyFunc) {
-        let name, s, i, empty = {};
-        for(name in source){
-          // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
-          // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
-          // don't overwrite it with the toString() method that source inherited from Object.prototype
-          s = source[name];
-          if(!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))){
-            dest[name] = copyFunc ? copyFunc(s) : s;
-          }
-        }
-        return dest;
-      }
 
-      if(!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]"){
-        // null, undefined, any non-object, or function
-        return src;	// anything
-      }
-      if(src.nodeType && "cloneNode" in src){
-        // DOM Node
-        return src.cloneNode(true); // Node
-      }
-      if(src instanceof Date){
-        // Date
-        return new Date(src.getTime());	// Date
-      }
-      if(src instanceof RegExp){
-        // RegExp
-        return new RegExp(src);   // RegExp
-      }
-      let r, i, l;
-      if(src instanceof Array){
-        // array
-        r = [];
-        for(i = 0, l = src.length; i < l; ++i){
-          if(i in src){
-            r.push(clone(src[i]));
-          }
-        }
-        // we don't clone functions for performance reasons
-        //		}else if(d.isFunction(src)){
-        //			// function
-        //			r = function(){ return src.apply(this, arguments); };
-      }else{
-        // generic objects
-        r = src.constructor ? new src.constructor() : {};
-      }
-      return mixin(r, src, clone);
-    }
-    const saved = clone(nodes);
+    const saved = JSON.parse(JSON.stringify(nodes));
     const hasIncomingEdges = node => node.dependencies.length;
     const noIncomingEdges = node => !node.dependencies.length;
     let noEdges = nodes.filter(noIncomingEdges),
       withEdges = nodes.filter(hasIncomingEdges),
-      sorted = [],
-      sortedWithDependencies = [];
-    console.log(withEdges);
+      sorted = [];
 
     while (noEdges.length) {
       const node = noEdges.pop();
@@ -473,20 +420,20 @@ export class CpProvider {
       withEdges = withEdges.map( this.removeEdge.bind(null, node.name) );
       const newNoEdges = withEdges.filter(noIncomingEdges);
       noEdges = noEdges.concat(newNoEdges);
-
       withEdges = withEdges.filter(hasIncomingEdges);
     }
+   // console.log(sorted);
 
-    for(let x = 0; x <sorted.length; x++) {
-      for(let y = 0; y < saved.length; y++) {
-        if(saved[x].name == sorted[y].name){
-          console.log(saved[x].name);
-          console.log(sorted[y].name);
-          sortedWithDependencies.push(saved[x]);
+    for(let x = 0; x <saved.length; x++) {
+      for(let y = 0; y < sorted.length; y++) {
+        if(sorted[y].name == saved[x].name){
+          sorted[y].dependencies = saved[x].dependencies;
         }
       }
     }
-    return sortedWithDependencies;
+    console.log("this is sorted with dependencies\n");
+    console.log(sorted);
+    return sorted;
   }
 
 }
