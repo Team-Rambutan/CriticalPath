@@ -231,7 +231,8 @@ function forwardPassCalculation(topoEventSet){
 
   //console.log(finishedNodes);
   //console.log(originalSet);
-  return originalSet;
+  topoEventSet=originalSet;
+  return topoEventSet;
 }
 
 //backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
