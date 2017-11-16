@@ -1,3 +1,33 @@
+
+ /*
+ original example/resources
+ creately.com/blog/diagrams/critical-path-method-projects/#.WfVvtrGkBcU.gmail
+ https://www.youtube.com/watch?v=W_HCC3a5tmA
+ https://en.wikipedia.org/wiki/Topological_sorting
+  */
+
+ /*
+ super simple code for finding longest path
+ https://stackoverflow.com/questions/20270811/how-can-i-calculate-the-shortest-and-longest-paths-of-this-qa-flow
+  */
+
+ /*
+ another resource for finding longest path
+ http://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/
+  */
+
+===================================================================================================================================
+/*
+  //add back dependencies
+  for(let i=0;i<finishedNodes.length;i++){
+    //console.log(i);
+    let node=finishedNodes[i];
+    //console.log(originalSet);
+    let temp=containsName(originalSet,node);
+    finishedNodes[i].dependencies=temp.dependencies;
+  }
+*/
+=================================================================================================================================
   //disabled for now
   while(inProcessNodes.length>99990){
     var nodeU=inProcessNodes.shift();

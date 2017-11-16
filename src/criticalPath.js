@@ -1,81 +1,64 @@
-/*
-original example/resources
-creately.com/blog/diagrams/critical-path-method-projects/#.WfVvtrGkBcU.gmail
-https://www.youtube.com/watch?v=W_HCC3a5tmA
-https://en.wikipedia.org/wiki/Topological_sorting
- */
-
-/*
-super simple code for finding longest path
-https://stackoverflow.com/questions/20270811/how-can-i-calculate-the-shortest-and-longest-paths-of-this-qa-flow
- */
-
-/*
-another resource for finding longest path
-http://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/
- */
 
 //region example set
 //example set to test with
-var exampleActivitySet=[];
-var activityA={
+let exampleActivitySet=[];
+let activityA={
   name:"A",
   duration:10,
   description:"asdf",
   dependencies:[],
   assignees:["aaa","bbb","ccc"],
-}
-var activityB={
+};
+let activityB={
   name:"B",
   duration:20,
   description:"asdf",
   dependencies:[activityA],
   assignees:["aaa","bbb","ccc"],
-}
-var activityC={
+};
+let activityC={
   name:"C",
   duration:5,
   description:"asdf",
   dependencies:[activityB],
   assignees:["aaa","bbb","ccc"],
-}
-var activityD={
+};
+let activityD={
   name:"D",
   duration:10,
   description:"asdf",
   dependencies:[activityC],
   assignees:["aaa","bbb","ccc"],
-}
-
-var activityF={
+};
+let activityF={
   name:"F",
   duration:15,
   description:"asdf",
   dependencies:[activityA],
   assignees:["aaa","bbb","ccc"],
-}
-var activityG={
+};
+let activityG={
   name:"G",
   duration:5,
   description:"asdf",
   dependencies:[activityF,activityC],
   assignees:["aaa","bbb","ccc"],
-}
-var activityH={
+};
+let activityH={
   name:"H",
   duration:15,
   description:"asdf",
   dependencies:[activityA],
   assignees:["aaa","bbb","ccc"],
-}
-
-var activityE={
+};
+let activityE={
   name:"E",
   duration:20,
   description:"asdf",
   dependencies:[activityD,activityG,activityH],
   assignees:["aaa","bbb","ccc"],
-}
+};
+
 exampleActivitySet.push(activityA);
 exampleActivitySet.push(activityF);
 exampleActivitySet.push(activityB);
@@ -88,18 +71,23 @@ exampleActivitySet.push(activityE);
 //endregion
 
 //example output
+//assumes input is a topologically sorted array
 console.log(longestPath(calculateTimes(exampleActivitySet)));
 console.log(longestPathDuration(exampleActivitySet[exampleActivitySet.length-1]));
 
-//important functions
-//longestPath(calculatedActivitySet)
-//calculateTimes(topologicallySortedActivitySet)
-//longestPathDuration(activitySet)
+//calculate float times
+//when given an activity set with calculated earliest/latest start/end times, it will return the same result with the float times
+function calculateFloatTimes(activityList) {
+  for (let i = 0; i < activityList.length; i++) {
+    activityList[i].floatTime = activityList[i].latestEnd - activityList[i].earliestEnd;
+  }
+  return activityList;
+}
 
 //calculates the longest path
 function longestPathDuration(startNode){
-  var paths=[];
-  var names=[];
+  let paths=[];
+  let names=[];
 
 
   function findAllPaths(startNode,currentCost){
@@ -112,8 +100,8 @@ function longestPathDuration(startNode){
 
     //recursive case
     //console.log('recursive case');
-    for(var i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
-      var child=startNode.dependencies[i];
+    for(let i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
+      let child=startNode.dependencies[i];
       names.push(startNode.name);
       findAllPaths(startNode.dependencies[i],currentCost+child.duration);//recursively find the next node until base case is satisfied
     }
@@ -128,8 +116,8 @@ function longestPathDuration(startNode){
 
 //calculate the shortest distance.
 function shortestPathDuration(firstStartNode){
-  var paths=[];
-  var names=[];
+  let paths=[];
+  let names=[];
 
   function findAllPaths(startNode,currentCost){
     //base case
@@ -141,8 +129,8 @@ function shortestPathDuration(firstStartNode){
 
     //recursive case
     //console.log('recursive case');
-    for(var i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
-      var child=startNode.dependencies[i];
+    for(let i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
+      let child=startNode.dependencies[i];
       names.push(startNode.name);
       findAllPaths(child,currentCost+child.duration);//recursively find the next node until base case is satisfied
     }
@@ -155,34 +143,45 @@ function shortestPathDuration(firstStartNode){
   return Math.min.apply(Math,paths);
 }
 
+//combines both forwardPassCalculation and backwardPassCalculation function
+//when given a topologically sorted event set, it will return the same result along with calculated earliest/latest start/end times
 function calculateTimes(topoEventSet){
-  var forwardPassResult=forwardPassCalculation(topoEventSet);
+  let forwardPassResult=forwardPassCalculation(topoEventSet);
   //console.log(forwardPassResult);
-  var backwardPassResult=backwardPassCalculation(forwardPassResult);
-  return backwardPassResult;
+  let backwardPassResult=backwardPassCalculation(forwardPassResult);
+  //console.log(backwardPassResult);
+  //let finalResult=calculateFloatTimes(backwardPassResult);
+
+  return calculateFloatTimes(backwardPassResult);
 }
 
 //forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
 function forwardPassCalculation(topoEventSet){
   //console.log(topoEventSet);
-  var originalSet=clone(topoEventSet);//keeps an original record of dependencies
-  var finishedNodes=[];
-  var inProcessNodes=[];
+  let originalSet=clone(topoEventSet);//keeps an original record of dependencies
+  let finishedNodes=[];
+  let inProcessNodes=[];
 
   //initialize the first node
   inProcessNodes.push(topoEventSet.shift());
 
 
   while(inProcessNodes.length>0){
-    var nodeU=inProcessNodes.shift();
-    if(!nodeU.hasOwnProperty('earliestStart')){nodeU.earliestStart=1};//case for the first node
-    nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;//calculate the earliest end time
+    let nodeU=inProcessNodes.shift();
+
+    //case for the first node
+    if(!nodeU.hasOwnProperty('earliestStart')){
+      nodeU.earliestStart=1
+    }
+
+    //calculate the earliest end time
+    nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;
     //console.log(nodeU);
     //console.log(inProcessNodes);
 
 
-    for(var i=0;i<topoEventSet.length;i++){//for each node in the topologically sorted node set...
-      var nodeV=topoEventSet[i];
+    for(let i=0;i<topoEventSet.length;i++){//for each node in the topologically sorted node set...
+      let nodeV=topoEventSet[i];
 
 
       if(checkForDependencyMatch(nodeV,nodeU)){//For each vertex v directly following u...
@@ -200,7 +199,7 @@ function forwardPassCalculation(topoEventSet){
 
 
         //remove the edge/dependency
-        var index=topoEventSet[i].dependencies.indexOf(nodeU);
+        let index=topoEventSet[i].dependencies.indexOf(nodeU);
         topoEventSet[i].dependencies.splice(index,1);
 
         //push nodeV into inProcessNodes to turn into nodeU's
@@ -211,38 +210,24 @@ function forwardPassCalculation(topoEventSet){
     //checks if node already has been calculated due to multiple dependencies, might have an updated earliestStart/earliestEnd
     if(contains(finishedNodes,nodeU)){
       //console.log(nodeU);
-      var index=finishedNodes.indexOf(nodeU);
+      let index=finishedNodes.indexOf(nodeU);
       finishedNodes.splice(index,1,nodeU);
       //console.log(finishedNodes);
     }else{
       finishedNodes.push(nodeU);
     }
-
-
-
     //console.log(inProcessNodes.length);
   }
 
   //add calculated times to originalSet
-  for(var i=0;i<originalSet.length;i++){
+  for(let i=0;i<originalSet.length;i++){
     //console.log(i);
-    var node=originalSet[i];
+    let node=originalSet[i];
     //console.log(originalSet);
-    var temp=containsName(finishedNodes,node);
+    let temp=containsName(finishedNodes,node);
     node.earliestStart=temp.earliestStart;
     node.earliestEnd=temp.earliestEnd;
   }
-
-/*
-  //add back dependencies
-  for(var i=0;i<finishedNodes.length;i++){
-    //console.log(i);
-    var node=finishedNodes[i];
-    //console.log(originalSet);
-    var temp=containsName(originalSet,node);
-    finishedNodes[i].dependencies=temp.dependencies;
-  }
-*/
 
   //console.log(finishedNodes);
   //console.log(originalSet);
@@ -251,21 +236,20 @@ function forwardPassCalculation(topoEventSet){
 
 //backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
 function backwardPassCalculation(forwardPassResult){
-  //var workingSet=clone(forwardPassResult.reverse());
-  var finishedNodes=[];
-  var nodesToProcess=[];
+  //let workingSet=clone(forwardPassResult.reverse());
+  let finishedNodes=[];
+  let nodesToProcess=[];
 
   //initialize the first node 'U',calculate the latest times,
-  var nodeU=forwardPassResult.pop();
+  let nodeU=forwardPassResult.pop();
   nodeU.latestEnd=nodeU.earliestEnd;
   nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
   //console.log(nodeU);
 
-
   //console.log(workingSet);
   while(nodeU.dependencies.length>0) {
     //console.log(nodeU.dependencies[i]);
-    var nodeV=containsName(forwardPassResult,nodeU.dependencies[0]);
+    let nodeV=containsName(forwardPassResult,nodeU.dependencies[0]);
     nodeU.dependencies.shift();//eliminate dependency
 
     //calculate the latest end times...
@@ -289,7 +273,7 @@ function backwardPassCalculation(forwardPassResult){
     }
 
     if(nodeU.dependencies.length===0&&nodesToProcess.length>0){//checks if the newly assigned nodeU is the beginning of the graph
-      for(var i=0;i<nodesToProcess.length;i++){
+      for(let i=0;i<nodesToProcess.length;i++){
         nodeU=nodesToProcess.shift();
         if(nodeU.dependencies.length>0)break;
         nodesToProcess.push(nodeU);
@@ -323,7 +307,7 @@ function longestPath(activityList){
 
 //given object1, checks if object2 exist in object1's dependency list
 function checkForDependencyMatch(object1,object2){
-  for(var i=0; i<object1.dependencies.length; i++){
+  for(let i=0; i<object1.dependencies.length; i++){
     //console.log('checking');
     //console.log(object1.dependencies[i]);
     if(object1.dependencies[i]===object2)
@@ -335,7 +319,7 @@ function checkForDependencyMatch(object1,object2){
 
 //checks if an array has obj in it
 function contains(a, obj) {
-  for (var i = 0; i < a.length; i++) {
+  for (let i = 0; i < a.length; i++) {
     if (a[i] === obj) {
       return a[i];
     }
@@ -345,7 +329,7 @@ function contains(a, obj) {
 
 //weak comparison
 function containsName(a,obj){
-  for (var i = 0; i < a.length; i++) {
+  for (let i = 0; i < a.length; i++) {
     if (a[i].name === obj.name) {
       return a[i];
     }
@@ -357,7 +341,7 @@ function containsName(a,obj){
 //https://davidwalsh.name/javascript-clone
 function clone(src) {
   function mixin(dest, source, copyFunc) {
-    var name, s, i, empty = {};
+    let name, s, i, empty = {};
     for(name in source){
       // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
       // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
@@ -386,7 +370,7 @@ function clone(src) {
     // RegExp
     return new RegExp(src);   // RegExp
   }
-  var r, i, l;
+  let r, i, l;
   if(src instanceof Array){
     // array
     r = [];
@@ -406,10 +390,3 @@ function clone(src) {
   return mixin(r, src, clone);
 
 }
-
-
-//forwardPassCalculation(exampleActivitySet);//okay i think this works
-//backwardPassCalculation(exampleActivitySet);//should only works with forwardPassCalculation result
-calculateTimes(exampleActivitySet);
-//console.log(calculateTimes(exampleActivitySet));
-//console.log(forwardPassCalculation((exampleActivitySet)));
