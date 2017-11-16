@@ -41,7 +41,7 @@ export class CpProvider {
 
 
   removeEdge(adjacentVertex, node) {
-    node.dependencies = node.dependencies.filter(vertex => vertex !== adjacentVertex);
+    node.dependencies = node.dependencies.filter(vertex => vertex.name !== adjacentVertex);
     return node;
   }
 
@@ -52,6 +52,7 @@ export class CpProvider {
     let noEdges = nodes.filter(noIncomingEdges),
       withEdges = nodes.filter(hasIncomingEdges),
       sorted = [];
+    console.log(withEdges);
 
     while (noEdges.length) {
       const node = noEdges.pop();
