@@ -327,9 +327,9 @@ function checkForDependencyMatch(object1,object2){
     //console.log('checking');
     //console.log(object1.dependencies[i]);
     if(object1.dependencies[i]===object2)
-      //console.log('match');
+    //console.log('match');
       return true;
-    }
+  }
   return false;
 }
 
