@@ -1,0 +1,344 @@
+
+ /*
+ original example/resources
+ creately.com/blog/diagrams/critical-path-method-projects/#.WfVvtrGkBcU.gmail
+ https://www.youtube.com/watch?v=W_HCC3a5tmA
+ https://en.wikipedia.org/wiki/Topological_sorting
+  */
+
+ /*
+ super simple code for finding longest path
+ https://stackoverflow.com/questions/20270811/how-can-i-calculate-the-shortest-and-longest-paths-of-this-qa-flow
+  */
+
+ /*
+ another resource for finding longest path
+ http://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/
+  */
+
+===================================================================================================================================
+/*
+  //add back dependencies
+  for(let i=0;i<finishedNodes.length;i++){
+    //console.log(i);
+    let node=finishedNodes[i];
+    //console.log(originalSet);
+    let temp=containsName(originalSet,node);
+    finishedNodes[i].dependencies=temp.dependencies;
+  }
+*/
+=================================================================================================================================
+  //disabled for now
+  while(inProcessNodes.length>99990){
+    var nodeU=inProcessNodes.shift();
+    //console.log(nodeU);
+    if(!nodeU.hasOwnProperty('latestEnd')){nodeU.latestEnd=nodeU.earliestEnd};//case for the first node, property 'earliest end should already be initialized' (because of the forwardPassCalculation
+    nodeU.latestStart=nodeU.latestEnd-nodeU.duration;
+    //console.log(nodeU);
+    //console.log(inProcessNodes);
+
+
+    for(var i=0;i<forwardPassResult.length;i++){//for each node in the topologically sorted node set... (working/counting backwards)
+
+
+      /* theory 1
+      for(var d=0;d<forwardPassResult[i].dependencies.length;d++){
+        var nodeV=forwardPassResult[i].dependencies[d];
+        console.log(nodeV);
+        //calculate the latest end times...
+        if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
+          //console.log(nodeV);
+          nodeV.latestEnd = nodeU.latestStart;//calculate latest end time
+        } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
+          nodeV.latestEnd = nodeU.latestStart;
+        }
+
+        //calculate the latest start time...
+        nodeV.latestStart = nodeV.latestEnd - nodeV.duration;
+        ///console.log(nodeV);
+
+
+        //remove the edge/dependency from nodeU
+        var index = nodeU.dependencies.indexOf(nodeV);
+        nodeU.dependencies.splice(index, 1);
+
+        //console.log(nodeV);
+        //push nodeV into inProcessNodes to turn into nodeU's
+        inProcessNodes.push(nodeV);
+        //console.log(inProcessNodes.length);
+      }
+/*/
+
+      /*
+      var nodeV=forwardPassResult[i];
+        console.log(nodeU.name);
+        console.log(checkForDependencyMatch(nodeU,nodeV));
+
+        if (checkForDependencyMatch(nodeV, nodeU)) {//For each vertex v directly following u...
+          //calculate the latest end times...
+          if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
+            //console.log(nodeV);
+            nodeV.latestEnd = nodeU.latestStart;//calculate latest end time
+          } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
+            nodeV.latestEnd = nodeU.latestStart;
+          }
+
+          //calculate the latest start time...
+          nodeV.latestStart = nodeV.latestEnd - nodeV.duration;
+          ///console.log(nodeV);
+
+
+          //remove the edge/dependency from nodeU
+          var index = nodeU.dependencies.indexOf(nodeV);
+          nodeU.dependencies.splice(index, 1);
+
+          //console.log(nodeV);
+          //push nodeV into inProcessNodes to turn into nodeU's
+          inProcessNodes.push(nodeV);
+          //console.log(inProcessNodes.length);
+
+      }
+      */
+
+
+    }
+
+
+
+
+      //calculate the latest start time...
+      nodeV.latestStart = nodeV.latestEnd - nodeV.duration;
+      ///console.log(nodeV);
+
+
+
+    //checks if node already has been calculated due to multiple dependencies, might have an updated earliestStart/earliestEnd
+    if(contains(finishedNodes,nodeU)){
+      //console.log(nodeU);
+      var index=finishedNodes.indexOf(nodeU);
+      finishedNodes.splice(index,1,nodeU);
+      //console.log(finishedNodes);
+    }else{
+      //console.log(nodeU);
+      finishedNodes.push(nodeU);
+    }
+
+    //console.log(inProcessNodes.length);
+  }
+
+
+=============================================================================================================================================
+
+//backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
+function backwardPassCalculation(forwardPassResult){
+  var workingSet=clone(forwardPassResult.reverse());
+
+  //console.log(forwardPassResult);
+  var finishedNodes=[];
+  var inProcessNodes=[];
+
+  //initialize the first node (which is the last node, starting from the 'right)
+  inProcessNodes.push(workingSet[workingSet.length-1]);
+  //console.log(inProcessNodes);
+
+  var nodeU=inProcessNodes.shift();
+  if(!nodeU.hasOwnProperty('latestEnd')){nodeU.latestEnd=nodeU.earliestEnd};//case for the first node, property 'earliest end should already be initialized' (because of the forwardPassCalculation
+  nodeU.latestStart=nodeU.latestEnd-nodeU.duration;
+  //console.log(nodeU);
+
+  while(nodeU.dependencies.length>0){
+    var nodeV=nodeU.dependencies.shift();
+    //console.log(nodeV);
+
+    //calculate the latest end times...
+    if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
+      //console.log(nodeV);
+      nodeV.latestEnd = nodeU.latestStart;//calculate latest end time
+    } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
+      nodeV.latestEnd = nodeU.latestStart;
+    }
+
+    //calculate the latest start time...
+    nodeV.latestStart = nodeV.latestEnd - nodeV.duration;
+    ///console.log(nodeV);
+
+    //console.log(nodeV);
+    inProcessNodes.push(nodeV);
+
+    if(inProcessNodes.length>0&&nodeU.dependencies.length===0){
+      finishedNodes.push(clone(nodeU));
+      nodeU=inProcessNodes.shift();
+      //console.log(nodeU);
+    }else{
+      finishedNodes.push(nodeU);
+    }
+
+  //console.log(finishedNodes);)
+  console.log(finishedNodes);
+  return forwardPassResult;
+}
+
+//given object1, checks if object2 exist in object1's dependency list
+function checkForDependencyMatch(object1,object2){
+  for(var i=0;i<object1.dependencies.length;i++){
+    //console.log('checking');
+    //console.log(object1.dependencies[i]);
+    if(object1.dependencies[i]===object2)
+      //console.log('match');
+      return true;
+    }
+  return false;
+}
+
+//checks if an array has obj in it
+function contains(a, obj) {
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] === obj) {
+      return a[i];
+    }
+  }
+  return false;
+}
+
+//weak comparison
+function containsName(a,obj){
+  for (var i = 0; i < a.length; i++) {
+    if (a[i].name === obj.name) {
+      return a[i];
+    }
+  }
+  return false;
+}
+
+
+
+//cloning objects
+//https://davidwalsh.name/javascript-clone
+function clone(src) {
+  function mixin(dest, source, copyFunc) {
+    var name, s, i, empty = {};
+    for(name in source){
+      // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
+      // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
+      // don't overwrite it with the toString() method that source inherited from Object.prototype
+      s = source[name];
+      if(!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))){
+        dest[name] = copyFunc ? copyFunc(s) : s;
+      }
+    }
+    return dest;
+  }
+
+  if(!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]"){
+    // null, undefined, any non-object, or function
+    return src;	// anything
+  }
+  if(src.nodeType && "cloneNode" in src){
+    // DOM Node
+    return src.cloneNode(true); // Node
+  }
+  if(src instanceof Date){
+    // Date
+    return new Date(src.getTime());	// Date
+  }
+  if(src instanceof RegExp){
+    // RegExp
+    return new RegExp(src);   // RegExp
+  }
+  var r, i, l;
+  if(src instanceof Array){
+    // array
+    r = [];
+    for(i = 0, l = src.length; i < l; ++i){
+      if(i in src){
+        r.push(clone(src[i]));
+      }
+    }
+    // we don't clone functions for performance reasons
+    //		}else if(d.isFunction(src)){
+    //			// function
+    //			r = function(){ return src.apply(this, arguments); };
+  }else{
+    // generic objects
+    r = src.constructor ? new src.constructor() : {};
+  }
+  return mixin(r, src, clone);
+
+}
+
+
+//forwardPassCalculation(exampleActivitySet);//okay i think this works
+//backwardPassCalculation(exampleActivitySet);//should only works with forwardPassCalculation result
+calculateTimes(exampleActivitySet);
+//console.log(forwardPassCalculation((exampleActivitySet)));
+
+====================================================================================================================================
+    var nodeV=nodeU.dependencies.shift();
+
+    //calculate the latest end times...
+    if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
+      //console.log(nodeV);
+      nodeV.latestEnd = nodeU.latestStart;//calculate latest end time
+    } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
+      nodeV.latestEnd = nodeU.latestStart;
+    }
+    //console.log(nodeV);
+    //calculate the latest start time...
+    nodeV.latestStart = nodeV.latestEnd - nodeV.duration;
+
+    console.log(nodeV);
+    nodesToProcess.push(nodeV);
+
+    if(nodeU.dependencies.length===0){
+      finishedNodes.push(nodeU);
+      nodeU=nodesToProcess.shift();
+    }
+
+  }
+  //console.log(finishedNodes);
+
+
+===================================================================================================================================
+
+function shortestPathAlgorithm(nodeSet){
+
+  //Let d be an array of the same length as V; this will hold the shortest-path distances from s. Set d[s] = 0, all other d[u] = ∞.
+  let d=nodeSet;
+  //d.push(0);
+
+  //Let p be an array of the same length as V, with all elements initialized to nil. Each p[u] will hold the predecessor of u in the shortest path from s to u.
+  let p=[];
+
+  //Loop over the vertices u as ordered in V, starting from s:
+  while(nodeSet.length>0){
+    let verticesU=nodeSet.shift();
+    //console.log(verticesU);
+
+    //For each vertex v directly following u (i.e., there exists an edge from u to v):
+    for(let i=0;i<nodeSet.length;i++){
+      let vertices=nodeSet[i];
+      for(let j=0;j<vertices.dependencies.length;j++){
+        if(verticesU===vertices.dependencies[j]){
+          let verticesV=vertices[i];
+
+          //Let w be the weight of the edge from u to v.
+          let weight=verticesU.duration;
+
+          //Relax the edge: if d[v] > d[u] + w, set
+          //console.log(d[verticesV]>d[verticesU]+weight);
+          if(d[verticesV].duration>d[verticesU].duration+weight){
+
+            //d[v] ← d[u] + w,
+            d[verticesV].duration=d[verticesU].duration;
+            //p[v] ← u.
+            p[verticesV]=verticesU;
+          }
+        }
+      }
+    }
+  }
+
+  console.log(d);
+  console.log(p);
+}
+shortestPathAlgorithm(exampleActivitySet);
