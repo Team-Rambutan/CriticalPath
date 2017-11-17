@@ -24,7 +24,8 @@ export class ProjectPage {
   newEvent = {
     name: '',
     description: '',
-    duration: ''
+    duration: '',
+    start: false
   };
 
   constructor(public navCtrl: NavController,public firebaseProvider: FirebaseProvider, public navParams: NavParams,public alertCtrl: AlertController) {
@@ -41,6 +42,7 @@ export class ProjectPage {
   }
 
   addActivity(item){
+
     this.firebaseProvider.addActivity(item, this.newEvent);
   }
   removeActivity(item) {
@@ -67,6 +69,48 @@ export class ProjectPage {
       ]
     });
     alert.present();
+  }
+  editActivity(item){
+    console.log(item);
+    console.log(item.name);
+    console.log(this.newEvent.name);
+    const alert = this.alertCtrl.create({
+      title: 'Edit',
+      message: 'Do you want to edit: ' + item.name + '?',
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'Event Name',
+          type: 'name'
+        },
+        {
+          name: 'description',
+          placeholder: 'description'
+        },
+        {
+          name: 'duration',
+          placeholder: 'duration'
+        }
+        ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.firebaseProvider.editActivity(this.item, this.newEvent, name);
+            console.log(name);
+          }
+        }
+      ]
+    });
+    alert.present();
+
   }
 
 }

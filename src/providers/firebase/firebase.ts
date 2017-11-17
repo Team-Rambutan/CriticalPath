@@ -75,6 +75,11 @@ export class FirebaseProvider {
     console.log(activity.key);
     this.afd.list(path).remove(activity.key);
   }
+  editActivity(project,activity, name: string){
+    const path = '/Projects/' + project.key + '/Activities/'
+    this.afd.list(path).update(activity.key, {name:name});
+
+  }
 }
 
 

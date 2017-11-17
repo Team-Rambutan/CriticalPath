@@ -31,14 +31,14 @@
   <ion-list>
   <ion-item-sliding *ngFor="let event of events | async">
     <ion-item>
-      <ion-row>
+      <ion-row *ngIf='events' {{document.length}}>
         Name: {{ event.name }} <br />
         Description: {{event.description}} <br />
         Duration: {{event.duration}}
       </ion-row>
     </ion-item>
     <ion-item-options side="right">
-      <button ion-button color="danger" icon-only (click)="removeActivity(event)"><ion-icon name="create"></ion-icon></button>
+      <button ion-button color="danger" icon-only (click)="editActivity(event)"><ion-icon name="create"></ion-icon></button>
       <button ion-button color="danger" icon-only (click)="removeActivity(event)"><ion-icon name="trash"></ion-icon></button>
     </ion-item-options>
   </ion-item-sliding>
