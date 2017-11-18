@@ -165,12 +165,12 @@ export class CritpathPage {
     this.list.push(activityF);
     this.list.push(activityG);
     this.list.push(activityH);
-    this.sorted = this.cpProvider.topologicalSort(this.list);
+    console.log(this.list);
+    //this.sorted = this.cpProvider.topologicalSort(this.list);
 
-    console.log(this.sorted);
     // const path = this.cpProvider.calculateTimes(this.cpProvider.topologicalSort(this.list));
     // console.log(path);
-    let cal = this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.sorted)));
+    let cal = this.cpProvider.calculateTimes(this.cpProvider.topologicalSort(this.list));
     console.log(cal);
     this.list = [];
   }
@@ -187,7 +187,13 @@ export class CritpathPage {
       name:"B",
       duration:20,
       description:"asdf",
-      dependencies:[activityA],
+      dependencies:[{
+        name:"A",
+        duration:10,
+        description:"asdf",
+        dependencies:[],
+        assignees:["aaa","bbb","ccc"],
+      }],
       assignees:["aaa","bbb","ccc"],
     };
     let activityC={
@@ -235,9 +241,10 @@ export class CritpathPage {
     };
 
     this.list.push(activityA);
-    this.list.push(activityF);
-    this.list.push(activityB);
     this.list.push(activityH);
+
+    this.list.push(activityB);
+    this.list.push(activityF);
     this.list.push(activityG);
     this.list.push(activityC);
     this.list.push(activityD);
