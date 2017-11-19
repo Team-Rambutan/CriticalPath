@@ -1,26 +1,43 @@
-This is a starter template for [Ionic](http://ionicframework.com/docs/) projects.
+![logo](https://github.com/Team-Rambutan/CriticalPath/blob/master/logo2.png)
 
-## How to use this template
+### About CriticalPath
 
-*This template does not work on its own*. The shared files for each starter are found in the [ionic2-app-base repo](https://github.com/ionic-team/ionic2-app-base).
+CriticalPath is a project management tool that uses network analysis to help teams handle complex and time-sensitive operations. When getting involved with larger, complex projects there is often significant investment and risk. As risk and complexity increase, so does the difficulty of identifying the relationship between activities and the most efficient course of action. 
 
-To use this template, either create a new ionic project using the ionic node.js utility, or copy the files from this repository into the [Starter App Base](https://github.com/ionic-team/ionic2-app-base).
+CriticalPath is inspired by critical path analysis (CPA) and is a system that allows users to input activity-on-node task networks. A critical path, its length, and slack times will be calculated and displayed. In addition, the system will also execute topological sorting to show the execution sequences of the activities.
+ 
+ ### Critical Path Model
+ 
+ A critical path system constructs a model of the project that includes the following:
+ 
+* A list of all activities required to complete a project
+* The duration (hours) to complete an activity
+* The dependencies between activities
 
-### With the Ionic CLI:
+This information is used to calculate:
 
-Take the name after `ionic2-starter-`, and that is the name of the template to be used when using the `ionic start` command below:
+* The longest sequence of activities to reach the end of a project (the Critical Path)
+* The earliest and latest that each activity can start and finish without making the project longer
+
+The system determines which activities are "critical" (on the longest path) and which have "float" or can be delayed without increasing the time to complete the project. 
+
+The critical path is:
+
+**"The sequence of of project activities which add up to the longest overall duration"**
+
+### Installation
+
+1. Install Ionic
 
 ```bash
 $ sudo npm install -g ionic cordova
-$ ionic start mySideMenu sidemenu
 ```
 
-Then, to run it, cd into `mySideMenu` and run:
+2. [Download](https://github.com/Team-Rambutan/CriticalPath) a copy of CriticalPath 
+
+3. Run the App
 
 ```bash
-$ ionic cordova platform add ios
-$ ionic cordova run ios
+$ cd CriticalPath
+$ ionic serve
 ```
-
-Substitute ios for android if not on a Mac.
-

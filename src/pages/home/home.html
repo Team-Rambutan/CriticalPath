@@ -23,13 +23,12 @@
 
   <ion-list>
     <!--<ion-item-sliding *ngFor="let item of items | async" (click)="itemTapped($event, item)">-->
-    <ion-item-sliding *ngFor="let project of projects | async" (click)="itemTapped($event, project)">
-      <ion-item>
+    <ion-item *ngFor="let project of projects | async">
+
         {{ project.name }}
-      </ion-item>
-      <ion-item-options side="right">
         <button ion-button color="danger" icon-only (click)="removeItem(project)"><ion-icon name="trash"></ion-icon></button>
-      </ion-item-options>
-    </ion-item-sliding>
+        <button ion-button color="secondary" icon-only (click)="goCritPath($event, project)"><ion-icon name="md-eye"></ion-icon></button>
+        <button ion-button color="primary" icon-only (click)="itemTapped($event, project)"><ion-icon name="ios-create"></ion-icon></button>
+    </ion-item>
   </ion-list>
 </ion-content>
