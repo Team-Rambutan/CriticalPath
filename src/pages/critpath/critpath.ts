@@ -9,6 +9,9 @@ import { CpProvider } from './../../providers/cp/cp';
  * Ionic pages and navigation.
  */
 
+/**
+  IMPORTANT NOTE: THIS PAGE IS JUST FOR CALCULATING AND MANAGING DATA. NO CRUD TO DATABASE ALLOWED
+ */
 @IonicPage()
 @Component({
   selector: 'page-critpath',
@@ -17,242 +20,61 @@ import { CpProvider } from './../../providers/cp/cp';
 export class CritpathPage {
 
   list: any[];
-  sorted: any[]
+  activities: any[];
+  project: any;
+  formatList: any[]; // holds the list of activities without preceding keys.
+  calculatedList: any[];
+  topList: any[];
+  longPath: any[]; // holds nodes of the critical path.
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public cpProvider: CpProvider) {
+    this.project = navParams.get('project');
+    console.log(this.project);
+    this.activities = this.project.Activities;
+    console.log(this.activities);
+    this.formatList = [];
     this.list = [];
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad CritpathPage');
+
+    // Messy messy, but we need to strip the preceding keys of the objects
+    for (var key in this.activities) {
+      if (this.activities.hasOwnProperty(key)) {
+        var dependencies = this.activities[key].dependencies;
+        var temp = []; // set us up a temporary array to story the dependencies
+        for(var dependency in dependencies) {
+          temp.push({name: dependencies[dependency].name,
+                    duration: dependencies[dependency].duration})
+        }
+        this.activities[key].dependencies = temp;
+        console.log(this.activities[key].dependencies);
+
+        // push into the array, all activities that are stripped of their
+        this.formatList.push( {
+          name: this.activities[key].name,
+          duration: this.activities[key].duration,
+          description: this.activities[key].description,
+          dependencies: this.activities[key].dependencies
+        });
+      }
+    }
+    this.calculateAndAssign();
   }
 
-  test(){
-    let activityA={
-      name:"A",
-      duration:10,
-      description:"asdf",
-      dependencies:[],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityB={
-      name:"B",
-      duration:20,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityC={
-      name:"C",
-      duration:5,
-      description:"asdf",
-      dependencies:[activityB],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityD={
-      name:"D",
-      duration:10,
-      description:"asdf",
-      dependencies:[activityC],
-      assignees:["aaa","bbb","ccc"],
-    };
 
-    let activityF={
-      name:"F",
-      duration:15,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityG={
-      name:"G",
-      duration:5,
-      description:"asdf",
-      dependencies:[activityF,activityC],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityH={
-      name:"H",
-      duration:15,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-
-    let activityE={
-      name:"E",
-      duration:20,
-      description:"asdf",
-      dependencies:[activityD,activityG,activityH],
-      assignees:["aaa","bbb","ccc"],
-    };
-    this.list.push(activityA);
-    this.list.push(activityB);
-    this.list.push(activityC);
-    this.list.push(activityD);
-    this.list.push(activityE);
-    this.list.push(activityF);
-    this.list.push(activityG);
-    this.list.push(activityH);
-    console.log(this.list);
-    console.log(this.cpProvider.longestPathDuration(activityE));
-    this.list = [];
+  // Fucntion which generates critical path data into data bindable variables
+  calculateAndAssign() {
+    this.topList = this.cpProvider.topologicalSort(this.formatList)
+    //send in copy of topList to calculate times
+    this.calculatedList = this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.topList)));
+    console.log(this.calculatedList);
+    this.longPath = this.cpProvider.longestPath(this.calculatedList);
+    console.log(this.longPath);
+    console.log(this.topList);
+    console.log(this.cpProvider.calculateCritPathDuration(this.longPath));
   }
 
-  test2() {
-    let activityA={
-      name:"A",
-      duration:10,
-      description:"asdf",
-      dependencies:[],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityB={
-      name:"B",
-      duration:20,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityC={
-      name:"C",
-      duration:5,
-      description:"asdf",
-      dependencies:[activityB],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityD={
-      name:"D",
-      duration:10,
-      description:"asdf",
-      dependencies:[activityC],
-      assignees:["aaa","bbb","ccc"],
-    };
-
-    let activityF={
-      name:"F",
-      duration:15,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityG={
-      name:"G",
-      duration:5,
-      description:"asdf",
-      dependencies:[activityF,activityC],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityH={
-      name:"H",
-      duration:15,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-
-    let activityE={
-      name:"E",
-      duration:20,
-      description:"asdf",
-      dependencies:[activityD,activityG,activityH],
-      assignees:["aaa","bbb","ccc"],
-    };
-    this.list.push(activityA);
-    this.list.push(activityB);
-    this.list.push(activityC);
-    this.list.push(activityD);
-    this.list.push(activityE);
-    this.list.push(activityF);
-    this.list.push(activityG);
-    this.list.push(activityH);
-    console.log(this.list);
-    //this.sorted = this.cpProvider.topologicalSort(this.list);
-
-    // const path = this.cpProvider.calculateTimes(this.cpProvider.topologicalSort(this.list));
-    // console.log(path);
-    let cal = this.cpProvider.calculateTimes(this.cpProvider.topologicalSort(this.list));
-    console.log(cal);
-    this.list = [];
-  }
-
-  test3() {
-    let activityA={
-      name:"A",
-      duration:10,
-      description:"asdf",
-      dependencies:[],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityB={
-      name:"B",
-      duration:20,
-      description:"asdf",
-      dependencies:[{
-        name:"A",
-        duration:10,
-        description:"asdf",
-        dependencies:[],
-        assignees:["aaa","bbb","ccc"],
-      }],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityC={
-      name:"C",
-      duration:5,
-      description:"asdf",
-      dependencies:[activityB],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityD={
-      name:"D",
-      duration:10,
-      description:"asdf",
-      dependencies:[activityC],
-      assignees:["aaa","bbb","ccc"],
-    };
-
-    let activityF={
-      name:"F",
-      duration:15,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityG={
-      name:"G",
-      duration:5,
-      description:"asdf",
-      dependencies:[activityF,activityC],
-      assignees:["aaa","bbb","ccc"],
-    };
-    let activityH={
-      name:"H",
-      duration:15,
-      description:"asdf",
-      dependencies:[activityA],
-      assignees:["aaa","bbb","ccc"],
-    };
-
-    let activityE={
-      name:"E",
-      duration:20,
-      dependencies:[activityD,activityG,activityH],
-      assignees:["aaa","bbb","ccc"],
-    };
-
-    this.list.push(activityA);
-    this.list.push(activityH);
-
-    this.list.push(activityB);
-    this.list.push(activityF);
-    this.list.push(activityG);
-    this.list.push(activityC);
-    this.list.push(activityD);
-    this.list.push(activityE);
-    let cal = this.cpProvider.calculateTimes(this.list);
-    console.log(cal);
-    this.list = [];
-
-  }
 
 }

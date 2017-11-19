@@ -5,6 +5,7 @@ import { AlertController } from 'ionic-angular';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import { ProjectPage } from '../project/project';
+import { CritpathPage } from '../critpath/critpath';
 
 @Component({
   selector: 'page-home',
@@ -65,6 +66,13 @@ export class HomePage {
     // Go to ProjectPage
     this.navCtrl.push(ProjectPage, {
       item: item
+    });
+  }
+
+  goCritPath(event, item) {
+    // Go to ProjectPage
+    this.navCtrl.push(CritpathPage, {
+      project: item
     });
   }
 

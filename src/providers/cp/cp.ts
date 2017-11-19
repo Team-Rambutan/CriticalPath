@@ -15,10 +15,17 @@ export class CpProvider {
     console.log('Hello CpProvider Provider');
   }
 
+  // Takes in a list of nodes which are in order of the critical path
+  calculateCritPathDuration(critPath) {
+    let duration = 0;
+    for(let i = 0; i < critPath.length; i++) {
+      duration += critPath[i].duration;
+    }
+    return duration;
+  }
 
   shortAndLong(tree, startNode) {
     let paths = [];
-
     function findAllPaths(startNode, currentCost) {
       //base case
       if (startNode.dependencies.length == 0) {
