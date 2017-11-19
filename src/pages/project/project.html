@@ -29,12 +29,14 @@
   <button ion-button (click)="addActivity(item)" block clean>Add Activity</button>
 
   <ion-list>
-  <ion-item-sliding *ngFor="let event of events | async">
+  <ion-item-sliding *ngFor="let event of events | async; let i = index; let lst = last; let fst = first;">
     <ion-item>
-      <ion-row *ngIf='events' {{document.length}}>
+      <ion-row>
         Name: {{ event.name }} <br />
         Description: {{event.description}} <br />
-        Duration: {{event.duration}}
+        Duration: {{event.duration}} <br />
+        <p *ngIf="fst" ngInit="setStart(event)">{{event.start}} I'm the first! </p>
+
       </ion-row>
     </ion-item>
     <ion-item-options side="right">
