@@ -104,8 +104,8 @@ export class CpProvider {
 
   calculateTimes(topoEventSet){
     let forwardPassResult= this.forwardPassCalculation(topoEventSet);
-    //console.log(forwardPassResult);
     let backwardPassResult= this.backwardPassCalculation(forwardPassResult);
+
 
     let finalResult=this.calculateFloatTimes(backwardPassResult);
     return finalResult;
@@ -267,7 +267,6 @@ export class CpProvider {
 
   //backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
   backwardPassCalculation(forwardPassResult){
-    //var workingSet=clone(forwardPassResult.reverse());
     let finishedNodes=[];
     let nodesToProcess=[];
 
@@ -283,7 +282,7 @@ export class CpProvider {
     //console.log(workingSet);
     while(nodeU.dependencies.length>0) {
       //console.log(nodeU);
-      let nodeV= this.containsName(JSON.parse(JSON.stringify(forwardPassResult)),nodeU.dependencies[0]);
+      let nodeV= this.containsName(forwardPassResult,nodeU.dependencies[0]);
       nodeU.dependencies.shift();//eliminate dependency
 
       //calculate the latest end times...
@@ -299,19 +298,22 @@ export class CpProvider {
       //console.log(nodeV);
 
       nodesToProcess.push(nodeV);
-
-
       finishedNodes.push(nodeU);
-      nodeU=nodesToProcess.shift();//assign a new node 'U'
+
+
+      console.log('start');
+      console.log(nodeU);
+      console.log('end');
+
+      if(nodeU.dependencies.length===0&&nodesToProcess.length>1){
+        nodeU=nodesToProcess.shift();//assign a new node 'U'
+      }
 
       //case for the beginning node
       if(nodeU.name===forwardPassResult[0].name&&nodesToProcess.length>0){
         nodesToProcess.push(nodeU);//keep pushing beginning node back until all other nodes are processed
       }
 
-      console.log('start');
-      console.log(nodeU);
-      console.log('end');
 
       if(nodeU.name===forwardPassResult[0].name&&nodesToProcess.length===0){
         finishedNodes.push(nodeU);
@@ -319,12 +321,10 @@ export class CpProvider {
 
     }
 
-    //finishedNodes.push(nodesToProcess.shift());
-    //finishedNodes.push(nodesToProcess.shift());
-
     //console.log(nodesToProcess);
-    //console.log(JSON.parse(JSON.stringify(finishedNodes)));
-    console.log('end');
+    //console.log('start');
+    //console.log(finishedNodes);
+    //console.log('end');
 
     return finishedNodes;
   }
