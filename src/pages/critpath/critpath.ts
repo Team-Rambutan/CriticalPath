@@ -18,7 +18,6 @@ import { CpProvider } from './../../providers/cp/cp';
   templateUrl: 'critpath.html',
 })
 export class CritpathPage {
-
   list: any[];
   activities: any[];
   project: any;
@@ -26,6 +25,7 @@ export class CritpathPage {
   calculatedList: any[];
   topList: any[];
   longPath: any[]; // holds nodes of the critical path.
+  duration: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public cpProvider: CpProvider) {
     this.project = navParams.get('project');
@@ -73,7 +73,15 @@ export class CritpathPage {
     this.longPath = this.cpProvider.longestPath(this.calculatedList);
     console.log(this.longPath);
     console.log(this.topList);
-    console.log(this.cpProvider.calculateCritPathDuration(this.longPath));
+    this.duration = this.cpProvider.calculateCritPathDuration(this.longPath);
+
+    // for(let x = 0; x <this.topList.length; x++) {
+    //   for(let y = 0; y < this.calculatedList.length; y++) {
+    //     if(this.topList[x].name == this.calculatedList[y].name){
+    //       this.topList[y].earl = this.calculatedList[x].dependencies;
+    //     }
+    //   }
+    // }
   }
 
 

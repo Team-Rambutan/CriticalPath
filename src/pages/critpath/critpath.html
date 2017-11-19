@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Critical Path for {{project.name}}</ion-title>
+    <ion-title>{{project.name}}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -17,7 +17,9 @@
   <!--<button ion-button (click)="calculateAndAssign()"> Crit Path(check console)</button>-->
 
  <ion-slides pager>
+
    <ion-slide>
+     <h1>Critical Path for {{project.name}}</h1>
      <ion-list>
        <ion-item *ngFor="let activity of longPath">
          {{activity.name}}
@@ -25,11 +27,15 @@
          <h3>Description: {{activity.description}}</h3>
        </ion-item>
      </ion-list>
+     <h2>Total Duration: {{duration}} Days</h2>
    </ion-slide>
+
+   <ion-slide>
+     <h1>Topological Execution for {{project.name}}</h1>
+     <h2>Slide 2</h2>
+   </ion-slide>
+
  </ion-slides>
 
-  <ion-slide style="background-color: blue">
-    <h2>Slide 2</h2>
-  </ion-slide>
 
 </ion-content>
