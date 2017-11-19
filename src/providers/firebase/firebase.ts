@@ -64,7 +64,8 @@ export class FirebaseProvider {
     const path = '/Projects/' + project.key + '/Activities/'
     console.log(project.key);
     console.log(activity);
-    this.afd.list(path).push(activity);
+    const ref = this.afd.list(path).push(activity);
+    return ref.key;
     // this.afd.list('/shoppingItems/').snapshotChanges();
   }
 
@@ -74,6 +75,12 @@ export class FirebaseProvider {
     console.log(project.key);
     console.log(activity.key);
     this.afd.list(path).remove(activity.key);
+  }
+
+  /* Use this method to add a event Json into the database tree */
+  addDependency(project,ref, dependency) {
+    const path = '/Projects/' + project.key + '/Activities/' + ref + '/dependencies/';
+    this.afd.list(path).push(dependency);
   }
 }
 

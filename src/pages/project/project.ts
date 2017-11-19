@@ -20,28 +20,110 @@ import { AlertController } from 'ionic-angular';
 })
 export class ProjectPage {
   events: Observable<any[]>;
+  dependencies: any[];
   item: any;
   newEvent = {
     name: '',
     description: '',
-    duration: ''
+    duration: null
   };
+
 
   constructor(public navCtrl: NavController,public firebaseProvider: FirebaseProvider, public navParams: NavParams,public alertCtrl: AlertController) {
     this.item = navParams.get('item');
+    console.log(this.item);
     this.events = this.firebaseProvider.getEvents(this.item);
     this.events.forEach(event => {
       console.log(event);
-    })
-
+    });
+    this.dependencies = [];
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProjectPage');
   }
 
+  // add to the dependency array.
+  setDependency(dependency){
+    console.log(dependency);
+    let exists = false;
+    for(let x = 0; x < this.dependencies.length; x++) {
+      if(dependency.name == this.dependencies[x].name) {
+        exists = true;
+        break;
+      }
+    }
+    if(exists) {
+      const alert = this.alertCtrl.create({
+        title: 'Alert',
+        message: 'This dependency already exists',
+        buttons: [
+          {
+            text: 'Okay',
+            role: 'Okay',
+            handler: () => {
+
+            }
+          },
+        ]
+      });
+      alert.present();
+    }else {
+      this.dependencies.push({name: dependency.name, duration: dependency.duration});
+      console.log(this.dependencies);
+    }
+  }
+
   addActivity(item){
-    this.firebaseProvider.addActivity(item, this.newEvent);
+    if(this.newEvent.name && this.newEvent.duration) {
+      const parsedDuration = parseInt(this.newEvent.duration);
+      if(parsedDuration) {
+        this.newEvent.duration = parsedDuration
+        const ref = this.firebaseProvider.addActivity(item, this.newEvent);
+
+        for(let x = 0; x < this.dependencies.length; x++) {
+          this.firebaseProvider.addDependency(this.item, ref, this.dependencies[x]);
+        }
+        //reset the fields
+        this.newEvent = {
+          name: '',
+          description: '',
+          duration: null
+        };
+        this.dependencies = [];
+      } else {
+        const alert = this.alertCtrl.create({
+          title: 'Alert',
+          message: 'In order to add an activity, the duration must be single integer',
+          buttons: [
+            {
+              text: 'Okay',
+              role: 'Okay',
+              handler: () => {
+
+              }
+            },
+          ]
+        });
+        alert.present();
+      }
+    }else {
+      const alert = this.alertCtrl.create({
+        title: 'Alert',
+        message: 'In order to add an activity, it must have both a name and duration in days!',
+        buttons: [
+          {
+            text: 'Okay',
+            role: 'Okay',
+            handler: () => {
+
+            }
+          },
+        ]
+      });
+      alert.present();
+    }
+
   }
   removeActivity(item) {
     console.log(item);

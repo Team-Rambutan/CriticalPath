@@ -179,6 +179,8 @@ export class CpProvider {
       //case for the first node
       if(!nodeU.hasOwnProperty('earliestStart')){
         nodeU.earliestStart=1
+        console.log('this is node u');
+        console.log(nodeU);
       }
 
       //calculate the earliest end time
@@ -220,6 +222,8 @@ export class CpProvider {
         finishedNodes.splice(index,1,nodeU);
         //console.log(finishedNodes);
       }else{
+        console.log('this is node u');
+        console.log(nodeU);
         finishedNodes.push(nodeU);
       }
       //console.log(inProcessNodes.length);
@@ -238,6 +242,8 @@ export class CpProvider {
     //console.log(finishedNodes);
     //console.log(originalSet);
     topoEventSet=originalSet;
+    console.log('this is the topo set');
+    console.log(topoEventSet);
     return topoEventSet;
   }
 
@@ -246,6 +252,7 @@ export class CpProvider {
     //var workingSet=clone(forwardPassResult.reverse());
     let finishedNodes=[];
     let nodesToProcess=[];
+    console.log(forwardPassResult);
 
     //initialize the first node 'U',calculate the latest times,
     let nodeU=forwardPassResult.pop();
@@ -290,9 +297,9 @@ export class CpProvider {
     }
 
     finishedNodes.push(nodesToProcess.shift());
-    //console.log(nodesToProcess);
+    console.log(nodesToProcess);
 
-    //console.log(finishedNodes);
+    console.log(finishedNodes);
     return finishedNodes;
   }
 

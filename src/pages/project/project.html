@@ -26,6 +26,18 @@
     <ion-label>Duration</ion-label>
     <ion-input type="number" [(ngModel)]="newEvent.duration" placeholder='Enter a number in hours'></ion-input>
   </ion-item>
+  <ion-item>
+    <ion-label>Dependencies</ion-label>
+    <ion-select  #C (ionChange)="setDependency(C.value)">
+      <ion-option *ngFor="let event of events | async" [value]="event"> {{event.name}}</ion-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label>Dependencies</ion-label>
+    <ion-list *ngFor="let dependency of dependencies">
+      {{dependency.name}}
+    </ion-list>
+  </ion-item>
   <button ion-button (click)="addActivity(item)" block clean>Add Activity</button>
 
   <ion-list>

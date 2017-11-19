@@ -49,7 +49,7 @@ export class CritpathPage {
                     duration: dependencies[dependency].duration})
         }
         this.activities[key].dependencies = temp;
-        console.log(this.activities[key].dependencies);
+        //console.log(this.activities[key].dependencies);
 
         // push into the array, all activities that are stripped of their
         this.formatList.push( {
@@ -60,21 +60,24 @@ export class CritpathPage {
         });
       }
     }
+    console.log('this is the format list');
+    console.log(this.formatList);
     this.calculateAndAssign();
   }
 
 
   // Fucntion which generates critical path data into data bindable variables
   calculateAndAssign() {
-    this.topList = this.cpProvider.topologicalSort(this.formatList)
+    this.topList = this.cpProvider.topologicalSort(JSON.parse(JSON.stringify(this.formatList)));
     //send in copy of topList to calculate times
     this.calculatedList = this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.topList)));
     console.log(this.calculatedList);
-    this.longPath = this.cpProvider.longestPath(this.calculatedList);
+    this.longPath = this.cpProvider.longestPath(JSON.parse(JSON.stringify(this.calculatedList)));
     console.log(this.longPath);
     console.log(this.topList);
     this.duration = this.cpProvider.calculateCritPathDuration(this.longPath);
 
+    // Messy, messy, but we have to add the start and end times to the top sorted list
     for(let x = 0; x <this.topList.length; x++) {
       for(let y = 0; y < this.calculatedList.length; y++) {
         if(this.topList[x].name == this.calculatedList[y].name){
