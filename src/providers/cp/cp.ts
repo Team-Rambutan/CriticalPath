@@ -112,7 +112,6 @@ export class CpProvider {
 //forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
   //forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
   forwardPassCalculation(topoEventSet){
-
     function clone(src) {
       function mixin(dest, source, copyFunc) {
         let name, s, i, empty = {};
@@ -164,14 +163,14 @@ export class CpProvider {
       return mixin(r, src, clone);
 
     }
-    //console.log(topoEventSet);
+
     let originalSet=clone(topoEventSet);//keeps an original record of dependencies
+
     let finishedNodes=[];
     let inProcessNodes=[];
 
     //initialize the first node
-    inProcessNodes.push(topoEventSet.shift());
-
+    inProcessNodes.push(originalSet.shift());
 
     while(inProcessNodes.length>0){
       let nodeU=inProcessNodes.shift();
@@ -179,8 +178,8 @@ export class CpProvider {
       //case for the first node
       if(!nodeU.hasOwnProperty('earliestStart')){
         nodeU.earliestStart=1
-        console.log('this is node u');
-        console.log(nodeU);
+        //console.log('this is node u');
+        //console.log(nodeU);
       }
 
       //calculate the earliest end time
@@ -189,8 +188,10 @@ export class CpProvider {
       //console.log(inProcessNodes);
 
 
-      for(let i=0;i<topoEventSet.length;i++){//for each node in the topologically sorted node set...
-        let nodeV=topoEventSet[i];
+      for(let i=0;i<originalSet.length;i++){//for each node in the working set...
+        let nodeV=originalSet[i];
+
+        //console.log(i);
 
         if(this.checkForDependencyMatch(nodeV,nodeU)){//For each vertex v directly following u...
           //calculate the earliest start times...
@@ -207,8 +208,8 @@ export class CpProvider {
 
 
           //remove the edge/dependency
-          let index=topoEventSet[i].dependencies.indexOf(nodeU);
-          topoEventSet[i].dependencies.splice(index,1);
+          let index=originalSet[i].dependencies.indexOf(nodeU);
+          originalSet[i].dependencies.splice(index,1);
 
           //push nodeV into inProcessNodes to turn into nodeU's
           inProcessNodes.push(nodeV);
@@ -222,29 +223,58 @@ export class CpProvider {
         finishedNodes.splice(index,1,nodeU);
         //console.log(finishedNodes);
       }else{
-        console.log('this is node u');
-        console.log(nodeU);
+        //console.log('this is node u');
+        //console.log(nodeU);
         finishedNodes.push(nodeU);
       }
       //console.log(inProcessNodes.length);
     }
 
+    //console.log(finishedNodes);
+
+
     //add calculated times to originalSet
-    for(let i=0;i<originalSet.length;i++){
+    //console.log(finishedNodes);
+    //console.log(finishedNodes.length);
+    for(let i=0;i<finishedNodes.length;i++){
+      //console.log(topoEventSet.length);
       //console.log(i);
-      let node=originalSet[i];
-      //console.log(originalSet);
-      let temp=this.containsName(finishedNodes,node);
-      node.earliestStart=temp.earliestStart;
-      node.earliestEnd=temp.earliestEnd;
+      let temp=finishedNodes[i];
+
+      //console.log(topoEventSet.length);
+      for(let j=0;j<topoEventSet.length;j++){
+        //console.log(j);
+        //console.log(topoEventSet[j].name);
+        //console.log(temp.name);
+
+        if(topoEventSet[j].name===temp.name){
+          topoEventSet[j].earliestStart=temp.earliestStart;
+          topoEventSet[j].earliestEnd=temp.earliestEnd;
+          break;
+        }else{
+          //console.log('not found');
+        }
+      }
+      //console.log(node);
     }
 
     //console.log(finishedNodes);
     //console.log(originalSet);
-    topoEventSet=originalSet;
-    console.log('this is the topo set');
-    console.log(topoEventSet);
-    return topoEventSet;
+    //topoEventSet=originalSet;
+    //console.log('this is the topo set');
+
+    //console.log('forwardPassCalculation start');
+    //let tempString=JSON.stringify(topoEventSet);
+    //let temp=JSON.parse(tempString);
+    //console.log(temp);
+    //topoEventSet=temp;
+    //console.log(topoEventSet.length);
+    //console.log(topoEventSet);
+    //console.log(JSON.stringify(topoEventSet));
+    //console.log(JSON.parse(JSON.stringify(topoEventSet)));
+    //console.log('forwardPassCalculation end');
+
+    return JSON.parse(JSON.stringify(topoEventSet));
   }
 
   //backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
@@ -252,19 +282,19 @@ export class CpProvider {
     //var workingSet=clone(forwardPassResult.reverse());
     let finishedNodes=[];
     let nodesToProcess=[];
-    console.log(forwardPassResult);
+    //console.log(JSON.parse(JSON.stringify(forwardPassResult)));
 
     //initialize the first node 'U',calculate the latest times,
-    let nodeU=forwardPassResult.pop();
+    let nodeU=JSON.parse(JSON.stringify(forwardPassResult)).pop();
     nodeU.latestEnd=nodeU.earliestEnd;
     nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
-    //console.log(nodeU);
+    console.log(nodeU);
 
 
     //console.log(workingSet);
     while(nodeU.dependencies.length>0) {
       //console.log(nodeU.dependencies[i]);
-      let nodeV= this.containsName(forwardPassResult,nodeU.dependencies[0]);
+      let nodeV= this.containsName(JSON.parse(JSON.stringify(forwardPassResult)),nodeU.dependencies[0]);
       nodeU.dependencies.shift();//eliminate dependency
 
       //calculate the latest end times...
@@ -281,26 +311,27 @@ export class CpProvider {
 
       nodesToProcess.push(nodeV);
 
-      if(nodeU.dependencies.length===0){
+      if(nodeU.name===forwardPassResult[0].name){
+        finishedNodes.push(nodeU);
+        break;
+      }else{
         finishedNodes.push(nodeU);
         nodeU=nodesToProcess.shift();//assign a new node 'U'
-        //console.log(nodeU);
-      }
 
-      if(nodeU.dependencies.length===0&&nodesToProcess.length>0){//checks if the newly assigned nodeU is the beginning of the graph
-        for(let i=0;i<nodesToProcess.length;i++){
-          nodeU=nodesToProcess.shift();
-          if(nodeU.dependencies.length>0)break;
-          nodesToProcess.push(nodeU);
-        }
+      }
+      if(nodeU.dependencies.length===0){
+
       }
     }
 
-    finishedNodes.push(nodesToProcess.shift());
-    console.log(nodesToProcess);
+    //finishedNodes.push(nodesToProcess.shift());
+    //finishedNodes.push(nodesToProcess.shift());
 
-    console.log(finishedNodes);
-    return finishedNodes;
+    //console.log(nodesToProcess);
+    //console.log(JSON.parse(JSON.stringify(finishedNodes)));
+    JSON.parse(JSON.stringify(finishedNodes.push(JSON.parse(JSON.stringify(forwardPassResult[0])))));
+
+    return JSON.parse(JSON.stringify(finishedNodes));
   }
 
   //given object1, checks if object2 exist in object1's dependency list
