@@ -75,13 +75,16 @@ export class CritpathPage {
     console.log(this.topList);
     this.duration = this.cpProvider.calculateCritPathDuration(this.longPath);
 
-    // for(let x = 0; x <this.topList.length; x++) {
-    //   for(let y = 0; y < this.calculatedList.length; y++) {
-    //     if(this.topList[x].name == this.calculatedList[y].name){
-    //       this.topList[y].earl = this.calculatedList[x].dependencies;
-    //     }
-    //   }
-    // }
+    for(let x = 0; x <this.topList.length; x++) {
+      for(let y = 0; y < this.calculatedList.length; y++) {
+        if(this.topList[x].name == this.calculatedList[y].name){
+          this.topList[x].earliestStart = this.calculatedList[y].earliestStart;
+          this.topList[x].earliestEnd = this.calculatedList[y].earliestEnd;
+          this.topList[x].latestStart = this.calculatedList[y].latestStart;
+          this.topList[x].latestEnd = this.calculatedList[y].latestEnd;
+        }
+      }
+    }
   }
 
 
