@@ -1,3 +1,5 @@
+![](src/images/Critical Path logo.png)
+
 ### About CriticalPath
 
 CriticalPath is a project management tool that uses network analysis to help teams handle complex and time-sensitive operations. When getting involved with larger, complex projects there is often significant investment and risk. As risk and complexity increase, so does the difficulty of identifying the relationship between activities and the most efficient course of action. 
