@@ -34,10 +34,14 @@ $ sudo npm install -g ionic cordova
 ```
 
 2. [Download](https://github.com/Team-Rambutan/CriticalPath) a copy of CriticalPath 
+```bash
+$ git clone https://github.com/Team-Rambutan/CriticalPath
+```
 
 3. Run the App
 
 ```bash
 $ cd CriticalPath
+$ npm install
 $ ionic serve
 ```
