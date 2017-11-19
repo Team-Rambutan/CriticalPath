@@ -41,8 +41,11 @@ export class ProjectPage {
     console.log('ionViewDidLoad ProjectPage');
   }
 
-  addActivity(item){
+  setStart(newEvent){
+    newEvent.start = true;
+  }
 
+  addActivity(item){
     this.firebaseProvider.addActivity(item, this.newEvent);
   }
   removeActivity(item) {
@@ -81,7 +84,6 @@ export class ProjectPage {
         {
           name: 'name',
           placeholder: 'Event Name',
-          type: 'name'
         },
         {
           name: 'description',
