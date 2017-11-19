@@ -1,4 +1,4 @@
-![logo](logo2.png)
+![logo](https://github.com/Team-Rambutan/CriticalPath/blob/master/logo2.png)
 
 ### About CriticalPath
 
