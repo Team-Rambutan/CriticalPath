@@ -1,4 +1,4 @@
-![](src/images/Critical Path logo.png)
+![](src/images/Critical Path logo.PNG)
 
 ### About CriticalPath
 
