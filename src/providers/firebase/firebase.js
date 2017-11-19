@@ -63,7 +63,8 @@ var FirebaseProvider = (function () {
         var path = '/Projects/' + project.key + '/Activities/';
         console.log(project.key);
         console.log(activity);
-        this.afd.list(path).push(activity);
+        var ref = this.afd.list(path).push(activity);
+        return ref.key;
         // this.afd.list('/shoppingItems/').snapshotChanges();
     };
     /* Use this method to add a event Json into the database tree */
@@ -72,6 +73,11 @@ var FirebaseProvider = (function () {
         console.log(project.key);
         console.log(activity.key);
         this.afd.list(path).remove(activity.key);
+    };
+    /* Use this method to add a event Json into the database tree */
+    FirebaseProvider.prototype.addDependency = function (project, ref, dependency) {
+        var path = '/Projects/' + project.key + '/Activities/' + ref + '/dependencies/';
+        this.afd.list(path).push(dependency);
     };
     return FirebaseProvider;
 }());

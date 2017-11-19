@@ -12,6 +12,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { ProjectPage } from '../project/project';
+import { CritpathPage } from '../critpath/critpath';
 var HomePage = (function () {
     function HomePage(navCtrl, firebaseProvider, alertCtrl) {
         this.navCtrl = navCtrl;
@@ -66,6 +67,12 @@ var HomePage = (function () {
         // Go to ProjectPage
         this.navCtrl.push(ProjectPage, {
             item: item
+        });
+    };
+    HomePage.prototype.goCritPath = function (event, item) {
+        // Go to ProjectPage
+        this.navCtrl.push(CritpathPage, {
+            project: item
         });
     };
     return HomePage;

@@ -68,10 +68,25 @@ export class CritpathPage {
 
   // Fucntion which generates critical path data into data bindable variables
   calculateAndAssign() {
-    this.topList = this.cpProvider.topologicalSort(JSON.parse(JSON.stringify(this.formatList)));
+    this.topList = this.cpProvider.topologicalSort(this.formatList);
     //send in copy of topList to calculate times
-    this.calculatedList = this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.topList)));
-    console.log(this.calculatedList);
+
+    console.log('asdf1');
+    console.log(this.topList);
+    let temp=this.cpProvider.topologicalSort(this.formatList);
+    let tempString=JSON.stringify(temp);
+    console.log(tempString);
+    console.log(JSON.parse(tempString));
+    console.log('asdf2');
+
+    //this.calculatedList = this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.topList)));//note: undefined happens here 11.19.17
+    this.calculatedList = this.cpProvider.calculateTimes(JSON.parse(tempString));//note: undefined happens here 11.19.17
+
+    //console.log('asdf 1');
+    //console.log(this.cpProvider.calculateTimes(JSON.parse(JSON.stringify(this.topList))));
+    //console.log(this.calculatedList);
+    console.log('asdf 2');
+
     this.longPath = this.cpProvider.longestPath(JSON.parse(JSON.stringify(this.calculatedList)));
     console.log(this.longPath);
     console.log(this.topList);

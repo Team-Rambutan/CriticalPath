@@ -26,19 +26,97 @@ var ProjectPage = (function () {
         this.newEvent = {
             name: '',
             description: '',
-            duration: ''
+            duration: null
         };
         this.item = navParams.get('item');
+        console.log(this.item);
         this.events = this.firebaseProvider.getEvents(this.item);
         this.events.forEach(function (event) {
             console.log(event);
         });
+        this.dependencies = [];
     }
     ProjectPage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad ProjectPage');
     };
+    // add to the dependency array.
+    ProjectPage.prototype.setDependency = function (dependency) {
+        console.log(dependency);
+        var exists = false;
+        for (var x = 0; x < this.dependencies.length; x++) {
+            if (dependency.name == this.dependencies[x].name) {
+                exists = true;
+                break;
+            }
+        }
+        if (exists) {
+            var alert_1 = this.alertCtrl.create({
+                title: 'Alert',
+                message: 'This dependency already exists',
+                buttons: [
+                    {
+                        text: 'Okay',
+                        role: 'Okay',
+                        handler: function () {
+                        }
+                    },
+                ]
+            });
+            alert_1.present();
+        }
+        else {
+            this.dependencies.push({ name: dependency.name, duration: dependency.duration });
+            console.log(this.dependencies);
+        }
+    };
     ProjectPage.prototype.addActivity = function (item) {
-        this.firebaseProvider.addActivity(item, this.newEvent);
+        if (this.newEvent.name && this.newEvent.duration) {
+            var parsedDuration = parseInt(this.newEvent.duration);
+            if (parsedDuration) {
+                this.newEvent.duration = parsedDuration;
+                var ref = this.firebaseProvider.addActivity(item, this.newEvent);
+                for (var x = 0; x < this.dependencies.length; x++) {
+                    this.firebaseProvider.addDependency(this.item, ref, this.dependencies[x]);
+                }
+                //reset the fields
+                this.newEvent = {
+                    name: '',
+                    description: '',
+                    duration: null
+                };
+                this.dependencies = [];
+            }
+            else {
+                var alert_2 = this.alertCtrl.create({
+                    title: 'Alert',
+                    message: 'In order to add an activity, the duration must be single integer',
+                    buttons: [
+                        {
+                            text: 'Okay',
+                            role: 'Okay',
+                            handler: function () {
+                            }
+                        },
+                    ]
+                });
+                alert_2.present();
+            }
+        }
+        else {
+            var alert_3 = this.alertCtrl.create({
+                title: 'Alert',
+                message: 'In order to add an activity, it must have both a name and duration in days!',
+                buttons: [
+                    {
+                        text: 'Okay',
+                        role: 'Okay',
+                        handler: function () {
+                        }
+                    },
+                ]
+            });
+            alert_3.present();
+        }
     };
     ProjectPage.prototype.removeActivity = function (item) {
         var _this = this;
