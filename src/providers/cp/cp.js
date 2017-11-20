@@ -162,7 +162,7 @@ var CpProvider = (function () {
             }
             return mixin(r, src, clone);
         }
-        var originalSet = clone(topoEventSet); //keeps an original record of dependencies
+        var originalSet = clone(JSON.parse(JSON.stringify(topoEventSet))); //keeps an original record of dependencies
         var finishedNodes = [];
         var inProcessNodes = [];
         //initialize the first node
@@ -212,6 +212,9 @@ var CpProvider = (function () {
             //console.log(inProcessNodes.length);
         }
         //console.log(finishedNodes);
+        console.log('start');
+        console.log(JSON.parse(JSON.stringify(topoEventSet)));
+        console.log('end');
         //add calculated times to originalSet
         for (var i = 0; i < finishedNodes.length; i++) {
             //console.log(topoEventSet.length);
@@ -234,90 +237,45 @@ var CpProvider = (function () {
     };
     //backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
     CpProvider.prototype.backwardPassCalculation = function (forwardPassResult) {
-        function clone(src) {
-            function mixin(dest, source, copyFunc) {
-                var name, s, i, empty = {};
-                for (name in source) {
-                    // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
-                    // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
-                    // don't overwrite it with the toString() method that source inherited from Object.prototype
-                    s = source[name];
-                    if (!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))) {
-                        dest[name] = copyFunc ? copyFunc(s) : s;
-                    }
-                }
-                return dest;
-            }
-            if (!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]") {
-                // null, undefined, any non-object, or function
-                return src; // anything
-            }
-            if (src.nodeType && "cloneNode" in src) {
-                // DOM Node
-                return src.cloneNode(true); // Node
-            }
-            if (src instanceof Date) {
-                // Date
-                return new Date(src.getTime()); // Date
-            }
-            if (src instanceof RegExp) {
-                // RegExp
-                return new RegExp(src); // RegExp
-            }
-            var r, i, l;
-            if (src instanceof Array) {
-                // array
-                r = [];
-                for (i = 0, l = src.length; i < l; ++i) {
-                    if (i in src) {
-                        r.push(clone(src[i]));
-                    }
-                }
-                // we don't clone functions for performance reasons
-                //		}else if(d.isFunction(src)){
-                //			// function
-                //			r = function(){ return src.apply(this, arguments); };
-            }
-            else {
-                // generic objects
-                r = src.constructor ? new src.constructor() : {};
-            }
-            return mixin(r, src, clone);
-        }
-        forwardPassResult.reverse();
-        var originalSet = clone(forwardPassResult); //keeps an original record of dependencies
         var finishedNodes = [];
         var inProcessNodes = [];
         //initialize the first node
-        inProcessNodes.push(originalSet.shift());
+        var startNode = forwardPassResult.pop();
+        inProcessNodes.push(startNode);
         while (inProcessNodes.length > 0) {
             var nodeU = inProcessNodes.shift();
             //case for the first node
-            if (!nodeU.hasOwnProperty('latestStart')) {
+            if (!nodeU.hasOwnProperty('latestEnd')) {
                 nodeU.latestEnd = nodeU.earliestEnd;
+                nodeU.latestStart = (nodeU.latestEnd + 1) - nodeU.duration;
             }
-            //calculate the latest start time
-            nodeU.latestStart = (nodeU.latestEnd - 1) - nodeU.duration;
+            else {
+                //calculate the latest start time
+                nodeU.latestStart = (nodeU.latestEnd + 1) - nodeU.duration;
+            }
             //console.log(nodeU);
             //console.log(inProcessNodes);
-            for (var i = 0; i < originalSet.length; i++) {
-                var nodeV = originalSet[i];
+            for (var i = 0; i < forwardPassResult.length; i++) {
+                var nodeV = forwardPassResult[i];
                 //console.log(i);
                 if (this.checkForDependencyMatch(nodeU, nodeV)) {
                     //calculate the earliest start times...
                     if (!nodeV.hasOwnProperty('latestStart')) {
                         //console.log(nodeV);
-                        nodeV.latestEnd = (nodeU.latestStart + 1); //calculate start time
+                        nodeV.latestEnd = (nodeU.latestStart - 1); //calculate start time
                     }
                     else if (nodeU.latestEnd > nodeV.latestStart) {
-                        nodeV.latestEnd = (nodeU.latestStart + 1);
+                        nodeV.latestEnd = (nodeU.latestStart - 1);
                     }
                     //calculate the latest start time...
-                    nodeV.latestStart = (nodeV.latestEnd - 1) - nodeV.duration;
+                    nodeV.latestStart = (nodeV.latestEnd + 1) - nodeV.duration;
                     ///console.log(nodeV);
                     //remove the edge/dependency
                     var index = nodeU.dependencies.indexOf(nodeV);
                     nodeU.dependencies.splice(index, 1);
+                    //console.log('start');
+                    //console.log(nodeU);
+                    //console.log('end');
                     //push nodeV into inProcessNodes to turn into nodeU's
                     inProcessNodes.push(nodeV);
                 }
@@ -327,35 +285,35 @@ var CpProvider = (function () {
                 //console.log(nodeU);
                 var index = finishedNodes.indexOf(nodeU);
                 finishedNodes.splice(index, 1, nodeU);
-                //console.log(finishedNodes);
             }
             else {
                 finishedNodes.push(nodeU);
             }
-            console.log('start');
-            console.log(finishedNodes);
-            console.log('end');
             //console.log(inProcessNodes.length);
         }
+        return finishedNodes;
+        /*
         //add calculated times to originalSet
-        for (var i = 0; i < finishedNodes.length; i++) {
-            //console.log(topoEventSet.length);
-            //console.log(i);
-            var temp = finishedNodes[i];
-            //console.log(topoEventSet.length);
-            for (var j = 0; j < forwardPassResult.length; j++) {
-                if (forwardPassResult[j].name === temp.name) {
-                    forwardPassResult[j].earliestStart = temp.earliestStart;
-                    forwardPassResult[j].earliestEnd = temp.earliestEnd;
-                    break;
-                }
-                else {
-                    //console.log('not found');
-                }
+        for(let i=0;i<finishedNodes.length;i++){
+          //console.log(topoEventSet.length);
+          //console.log(i);
+          let temp=finishedNodes[i];
+    
+          //console.log(topoEventSet.length);
+          for(let j=0;j<forwardPassResult.length;j++){
+    
+            if(forwardPassResult[j].name===temp.name){
+              forwardPassResult[j].earliestStart=temp.earliestStart;
+              forwardPassResult[j].earliestEnd=temp.earliestEnd;
+              break;
+            }else{
+              //console.log('not found');
             }
-            //console.log(node);
+          }
+          //console.log(node);
         }
         return forwardPassResult;
+        */
     };
     //given object1, checks if object2 exist in object1's dependency list
     CpProvider.prototype.checkForDependencyMatch = function (object1, object2) {

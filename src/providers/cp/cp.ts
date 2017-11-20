@@ -107,9 +107,9 @@ export class CpProvider {
 
     let backwardPassResult= this.backwardPassCalculation(forwardPassResult);
 
+    //let finalResult=this.calculateFloatTimes(backwardPassResult);
 
-    let finalResult=this.calculateFloatTimes(backwardPassResult);
-    return finalResult;
+    return backwardPassResult;
   }
 
   //calculate float times
@@ -178,7 +178,7 @@ export class CpProvider {
 
     }
 
-    let originalSet=clone(topoEventSet);//keeps an original record of dependencies
+    let originalSet=clone(JSON.parse(JSON.stringify(topoEventSet)));//keeps an original record of dependencies
 
     let finishedNodes=[];
     let inProcessNodes=[];
@@ -242,6 +242,9 @@ export class CpProvider {
 
     //console.log(finishedNodes);
 
+    //console.log('start');
+    //console.log(JSON.parse(JSON.stringify(topoEventSet)));
+    //console.log('end');
 
     //add calculated times to originalSet
     for(let i=0;i<finishedNodes.length;i++){
@@ -263,22 +266,24 @@ export class CpProvider {
       //console.log(node);
     }
 
+
     return topoEventSet;
   }
 
   //backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
   backwardPassCalculation(forwardPassResult){
-    forwardPassResult.reverse();
     let finishedNodes=[];
     let inProcessNodes=[];
 
+
     //initialize the first node
-    let startNode=forwardPassResult.shift();
+    let startNode=forwardPassResult.pop();
+
+
+
     inProcessNodes.push(startNode);
     while(inProcessNodes.length>0){
       let nodeU=inProcessNodes.shift();
-
-
 
       //case for the first node
       if(!nodeU.hasOwnProperty('latestEnd')){
@@ -289,14 +294,10 @@ export class CpProvider {
         nodeU.latestStart=(nodeU.latestEnd+1)-nodeU.duration;
       }
 
+
       //console.log(nodeU);
       //console.log(inProcessNodes);
 
-
-
-      console.log('start');
-      console.log(forwardPassResult.length);
-      console.log('end');
       for(let i=0;i<forwardPassResult.length;i++){//for each node in the working set...
         let nodeV=forwardPassResult[i];
 
@@ -317,17 +318,13 @@ export class CpProvider {
           //remove the edge/dependency
 
 
-          console.log('start');
-          console.log(nodeU);
-          console.log('end');
-
           let index=nodeU.dependencies.indexOf(nodeV);
           nodeU.dependencies.splice(index,1);
 
 
-          console.log('start');
-          console.log(nodeU);
-          console.log('end');
+          //console.log('start');
+          //console.log(nodeU);
+          //console.log('end');
           //push nodeV into inProcessNodes to turn into nodeU's
           inProcessNodes.push(nodeV);
         }
@@ -340,42 +337,12 @@ export class CpProvider {
         let index=finishedNodes.indexOf(nodeU);
         finishedNodes.splice(index,1,nodeU);
 
-
-
-
       }else{
         finishedNodes.push(nodeU);
       }
-
-
-
-
-
       //console.log(inProcessNodes.length);
     }
     return finishedNodes;
-    /*
-    //add calculated times to originalSet
-    for(let i=0;i<finishedNodes.length;i++){
-      //console.log(topoEventSet.length);
-      //console.log(i);
-      let temp=finishedNodes[i];
-
-      //console.log(topoEventSet.length);
-      for(let j=0;j<forwardPassResult.length;j++){
-
-        if(forwardPassResult[j].name===temp.name){
-          forwardPassResult[j].earliestStart=temp.earliestStart;
-          forwardPassResult[j].earliestEnd=temp.earliestEnd;
-          break;
-        }else{
-          //console.log('not found');
-        }
-      }
-      //console.log(node);
-    }
-    return forwardPassResult;
-    */
   }
 
   //given object1, checks if object2 exist in object1's dependency list
