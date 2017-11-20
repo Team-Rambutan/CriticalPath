@@ -26,9 +26,11 @@
     <ion-item *ngFor="let project of projects | async">
 
         {{ project.name }}
-        <button ion-button color="danger" icon-only (click)="removeItem(project)"><ion-icon name="trash"></ion-icon></button>
-        <button ion-button color="secondary" icon-only (click)="goCritPath($event, project)"><ion-icon name="md-eye"></ion-icon></button>
-        <button ion-button color="primary" icon-only (click)="itemTapped($event, project)"><ion-icon name="ios-create"></ion-icon></button>
+        <ion-buttons end>
+          <button ion-button end color="danger" icon-only (click)="removeItem(project)"><ion-icon name="trash"></ion-icon></button>
+          <button ion-button end color="secondary" icon-only (click)="goCritPath($event, project)"><ion-icon name="md-eye"></ion-icon></button>
+          <button ion-button end color="primary" icon-only (click)="itemTapped($event, project)"><ion-icon name="ios-create"></ion-icon></button>
+        </ion-buttons>
     </ion-item>
   </ion-list>
 </ion-content>

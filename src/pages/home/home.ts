@@ -22,6 +22,8 @@ export class HomePage {
     duration: 3
   };
 
+
+
   constructor(public navCtrl: NavController, public firebaseProvider: FirebaseProvider, public alertCtrl: AlertController) {
     this.projects = this.firebaseProvider.getProjects();
     this.projects.forEach(project => {
