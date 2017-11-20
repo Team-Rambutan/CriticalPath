@@ -17,28 +17,28 @@
     <ion-item>
       <ion-label floating>Activity Name</ion-label>
       <ion-input [(ngModel)]="newEvent.name" formControlName="name" type="text"
-                 [class.invalid]="!activityForm.controls.name.valid && (activityForm.controls.name.dirty || submitAttempt)"></ion-input>
+                 [class.invalid]="!activityForm.controls.name.valid && (activityForm.controls.name.dirty)"></ion-input>
     </ion-item>
-      <ion-item *ngIf="!activityForm.controls.name.valid  && (activityForm.controls.name.dirty || submitAttempt)">
+      <ion-item *ngIf="!activityForm.controls.name.valid  && (activityForm.controls.name.dirty)">
         <p>Please enter a valid name.</p>
       </ion-item>
 
     <ion-item>
       <ion-label floating>Description</ion-label>
       <ion-input [(ngModel)]="newEvent.description" formControlName="description" type="text"
-                 [class.invalid]="!activityForm.controls.description.valid && (activityForm.controls.description.dirty || submitAttempt)"></ion-input>
+                 [class.invalid]="!activityForm.controls.description.valid && (activityForm.controls.description.dirty)"></ion-input>
     </ion-item>
       <ion-item
-        *ngIf="!activityForm.controls.description.valid  && (activityForm.controls.duration.dirty || submitAttempt)">
+        *ngIf="!activityForm.controls.description.valid  && (activityForm.controls.duration.dirty)">
         <p>Please enter a valid description.</p>
       </ion-item>
 
     <ion-item>
       <ion-label floating>Duration</ion-label>
       <ion-input [(ngModel)]="newEvent.duration" formControlName="duration" type="number"
-                 [class.invalid]="!activityForm.controls.duration.valid && (activityForm.controls.duration.dirty || submitAttempt)"></ion-input>
+                 [class.invalid]="!activityForm.controls.duration.valid && (activityForm.controls.duration.dirty)"></ion-input>
     </ion-item>
-      <ion-item *ngIf="!activityForm.controls.duration.valid  && (activityForm.controls.duration.dirty || submitAttempt)">
+      <ion-item *ngIf="!activityForm.controls.duration.valid  && (activityForm.controls.duration.dirty)">
         <p>Please enter a valid duration.</p>
       </ion-item>
 
@@ -56,9 +56,9 @@
     </form>
   </ion-list>
 
-  <button ion-button (click)="addActivity(item)" block clean>Add Activity</button>
+  <button ion-button full color="primary" [disabled]="!activityForm.valid" (click)="addActivity(item)">Add Activity</button>
 
-  <ion-list>
+    <ion-list>
     <ion-item *ngFor="let event of events | async">
         <!--<ion-row>-->
           Name: {{ event.name }} <br />
