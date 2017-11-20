@@ -16,35 +16,34 @@
 <ion-content padding>
   <!--<button ion-button (click)="calculateAndAssign()"> Crit Path(check console)</button>-->
 
+  <h1>Critical Path for {{project.name}}</h1>
+  <ion-card>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let activity of longPath">
+          Name : {{activity.name}}
+          <h2>Duration : {{activity.duration}} days</h2>
+          <h3>Description: {{activity.description}}</h3>
+        </ion-item>
+      </ion-list>
+      <ion-card-header>Total Duration: {{duration}} Days</ion-card-header>
+    </ion-card-content>
+  </ion-card>
+  <h1>Topological Execution for {{project.name}}</h1>
 
 
-
-     <h1>Critical Path for {{project.name}}</h1>
-     <ion-list>
-       <ion-item *ngFor="let activity of longPath">
-         {{activity.name}}
-         <h2>Duration : {{activity.duration}} days</h2>
-         <h3>Description: {{activity.description}}</h3>
-       </ion-item>
-     </ion-list>
-     <h2>Total Duration: {{duration}} Days</h2>
-
-
-
-     <h1>Topological Execution for {{project.name}}</h1>
-
-
-
-     <ion-list >
-       <ion-item *ngFor="let activity of topList">
-         {{activity.name}}
-         <h2>Duration : {{activity.duration}} days</h2>
-         <h3>Earliest Start: {{activity.earliestStart}} | Earliest End: {{activity.earliestEnd}}</h3>
-         <h3>Latest Start: {{activity.latestStart}} | Latest End: {{activity.latestEnd}}</h3>
-         <h3>Description: {{activity.description}}</h3>
-       </ion-item>
-     </ion-list>
-
-
-
+  <ion-card>
+    <ion-card-content>
+    <ion-list>
+      <ion-item *ngFor="let activity of topList">
+        Name : {{activity.name}}
+        <h2>Duration : {{activity.duration}} days</h2>
+        <h3>Earliest Start: {{activity.earliestStart}} | Earliest End: {{activity.earliestEnd}}</h3>
+        <h3>Latest Start: {{activity.latestStart}} | Latest End: {{activity.latestEnd}}</h3>
+        <h3>Description: {{activity.description}}</h3>
+      </ion-item>
+    </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
