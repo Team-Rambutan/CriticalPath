@@ -11,7 +11,7 @@
 
 <ion-content padding>
   <h2>Welcome to {{item.name}}</h2>
-
+  <p>Enter an activity name, description, duration, and dependencies to add an activity.</p>
   <ion-list no-lines>
     <form [formGroup]="activityForm">
     <ion-item>
@@ -20,7 +20,7 @@
                  [class.invalid]="!activityForm.controls.name.valid && (activityForm.controls.name.dirty)"></ion-input>
     </ion-item>
       <ion-item *ngIf="!activityForm.controls.name.valid  && (activityForm.controls.name.dirty)">
-        <p>Please enter a valid name.</p>
+        <p class="error-msg">Please enter a valid name.</p>
       </ion-item>
 
     <ion-item>
@@ -30,7 +30,7 @@
     </ion-item>
       <ion-item
         *ngIf="!activityForm.controls.description.valid  && (activityForm.controls.description.dirty)">
-        <p>Please enter a valid description.</p>
+        <p class="error-msg">Please enter a valid description.</p>
       </ion-item>
 
     <ion-item>
@@ -39,7 +39,7 @@
                  [class.invalid]="!activityForm.controls.duration.valid && (activityForm.controls.duration.dirty)"></ion-input>
     </ion-item>
       <ion-item *ngIf="!activityForm.controls.duration.valid  && (activityForm.controls.duration.dirty)">
-        <p>Please enter a valid duration.</p>
+        <p class="error-msg">Please enter a valid duration.</p>
       </ion-item>
 
     <ion-item>
