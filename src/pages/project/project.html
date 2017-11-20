@@ -66,19 +66,21 @@
 
 
   <ion-list>
-    <ion-item-sliding *ngFor="let event of events | async">
-      <ion-item>
-        <ion-row>
+    <ion-item *ngFor="let event of events | async">
+      <!--<ion-item>-->
+        <!--<ion-row>-->
           Name: {{ event.name }} <br/>
           Description: {{event.description}} <br/>
           Duration: {{event.duration}}
-        </ion-row>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="danger" icon-only (click)="removeActivity(event)">
-          <ion-icon name="trash"></ion-icon>
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
+          <div item-end>
+          <ion-buttons end>
+            <button ion-button color="danger" icon-only (click)="removeActivity(event)">
+              <ion-icon name="trash"></ion-icon>
+            </button>
+          </ion-buttons>
+          </div>
+        <!--</ion-row>-->
+      <!--</ion-item>-->
+    </ion-item>
   </ion-list>
 </ion-content>
