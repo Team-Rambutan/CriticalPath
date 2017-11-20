@@ -16,6 +16,10 @@
       <ion-item no-lines>
         <ion-input no-lines formControlName="project" type="text" [(ngModel)]="newItem.name" placeholder="Project Name" [class.invalid]="!projectForm.controls.project.valid && (projectForm.controls.project.dirty || submitAttempt)"></ion-input>
       </ion-item>
+      <ion-item
+        *ngIf="!projectForm.controls.project.valid  && (projectForm.controls.project.dirty)">
+        <p class="error-msg">Please enter a project name.</p>
+      </ion-item>
     </ion-col>
     <ion-col col-2>
       <button ion-button [disabled]="!projectForm.valid" (click)="addItem()">Add Project</button>
