@@ -4,6 +4,8 @@ import { FirebaseProvider } from './../../providers/firebase/firebase';
 import { ActivityFormPage } from '../activityForm/activityForm';
 import { Observable } from 'rxjs/Observable';
 import { AlertController } from 'ionic-angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DurationValidator } from  '../../validators/duration';
 
 
 /**
@@ -27,14 +29,22 @@ export class ProjectPage {
     description: '',
     duration: null
   };
+  activityForm: FormGroup;
+
+  submitAttempt: boolean = false;
 
 
-  constructor(public navCtrl: NavController,public firebaseProvider: FirebaseProvider, public navParams: NavParams,public alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController,public firebaseProvider: FirebaseProvider, public navParams: NavParams,public alertCtrl: AlertController,public formBuilder: FormBuilder) {
     this.item = navParams.get('item');
     console.log(this.item);
     this.events = this.firebaseProvider.getEvents(this.item);
     this.events.forEach(event => {
       console.log(event);
+    })
+    this.activityForm = formBuilder.group({
+      name:['', Validators.compose([Validators.maxLength(50),Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=]*',), Validators.required])],
+      description:['',Validators.compose([Validators.maxLength(100), Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=,]*'), Validators.required])],
+      duration:['', Validators.compose([Validators.required, DurationValidator.isValid])]
     });
     this.dependencies = [];
   }
@@ -75,6 +85,7 @@ export class ProjectPage {
   }
 
   addActivity(item){
+    this.submitAttempt = true;
     if(this.newEvent.name && this.newEvent.duration) {
       const parsedDuration = parseInt(this.newEvent.duration);
       if(parsedDuration) {
@@ -123,6 +134,7 @@ export class ProjectPage {
       });
       alert.present();
     }
+    this.activityForm.reset();
 
   }
   removeActivity(item) {
