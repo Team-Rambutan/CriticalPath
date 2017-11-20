@@ -4,10 +4,10 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
-import { ActivityFormPage } from '../pages/activityForm/activityForm';
-import { ProjectPage } from '../pages/project/project';
-import {CritpathPage} from "../pages/critpath/critpath";
+// import { ListPage } from '../pages/list/list';
+// import { ActivityFormPage } from '../pages/activityForm/activityForm';
+// import { ProjectPage } from '../pages/project/project';
+// import {CritpathPage} from "../pages/critpath/critpath";
 
 @Component({
   templateUrl: 'app.html'
