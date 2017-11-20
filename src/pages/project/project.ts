@@ -43,7 +43,7 @@ export class ProjectPage {
     })
     this.activityForm = formBuilder.group({
       name:['', Validators.compose([Validators.maxLength(50),Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=]*'), Validators.required])],
-      description:['',Validators.compose([Validators.maxLength(100), Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=]*$'), Validators.required])],
+      description:['',Validators.compose([Validators.maxLength(100), Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=]*'), Validators.required])],
       duration:['', Validators.compose([Validators.required, DurationValidator.isValid])]
     });
   }
