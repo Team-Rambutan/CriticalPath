@@ -90,7 +90,7 @@ export class ProjectPage {
           description: '',
           duration: null
         };
-        this.dependencies = [];
+       // this.dependencies = [];
       } else {
         const alert = this.alertCtrl.create({
           title: 'Alert',

@@ -31,12 +31,12 @@
       <ion-option *ngFor="let event of events | async" [value]="event"> {{event.name}}</ion-option>
     </ion-select>
   </ion-item>
-  <ion-item>
+
     <ion-label>Dependencies</ion-label>
     <ion-list *ngFor="let dependency of dependencies">
       {{dependency.name}}
     </ion-list>
-  </ion-item>
+
   <button ion-button (click)="addActivity(item)" block clean>Add Activity</button>
 
   <ion-list>
@@ -45,8 +45,10 @@
         <ion-row>
           Name: {{ event.name }} <br />
           Description: {{event.description}} <br />
-          Duration: {{event.duration}}
+          Duration: {{event.duration}} <br />
+          Dependencies: {{event.dependencies | json}}
         </ion-row>
+
       </ion-item>
 
       <ion-item-options side="right">
