@@ -70,274 +70,170 @@ exampleActivitySet.push(activityE);
 //console.log(exampleActivitySet);
 //endregion
 
-//example output
-//assumes input is a topologically sorted array
-console.log(longestPath(calculateTimes(exampleActivitySet)));
-console.log(longestPathDuration(exampleActivitySet[exampleActivitySet.length-1]));
-
-//calculate float times
-//when given an activity set with calculated earliest/latest start/end times, it will return the same result with the float times
-function calculateFloatTimes(activityList) {
-  for (let i = 0; i < activityList.length; i++) {
-    activityList[i].floatTime = activityList[i].latestEnd - activityList[i].earliestEnd;
-  }
-  return activityList;
-}
-
-//calculates the longest path
-function longestPathDuration(startNode){
-  let paths=[];
-  let names=[];
+//console.log(calculateTimes(exampleActivitySet));
+calculateTimes(exampleActivitySet);
 
 
-  function findAllPaths(startNode,currentCost){
-    //base case
-    if(startNode.dependencies.length===0){//if node has no dependencies (is at the beginning)...
-      //console.log('base case');
-      paths.push(currentCost);
-      names.push(startNode.name,'end of path');
-    }
-
-    //recursive case
-    //console.log('recursive case');
-    for(let i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
-      let child=startNode.dependencies[i];
-      names.push(startNode.name);
-      findAllPaths(startNode.dependencies[i],currentCost+child.duration);//recursively find the next node until base case is satisfied
-    }
-  }//end findAllPaths function
-
-
-  findAllPaths(startNode,startNode.duration);
-  //console.log(paths);
-  //console.log(names);
-  return Math.max.apply(Math,paths);
-}
-
-//calculate the shortest distance.
-function shortestPathDuration(firstStartNode){
-  let paths=[];
-  let names=[];
-
-  function findAllPaths(startNode,currentCost){
-    //base case
-    if(startNode.dependencies.length===0){//if node has no dependencies (is at the beginning)...
-      //console.log('base case');
-      paths.push(currentCost);
-      names.push(startNode.name,'end of path');
-    }
-
-    //recursive case
-    //console.log('recursive case');
-    for(let i=0; i<startNode.dependencies.length; i++){//for each edge (dependencies) of the node...
-      let child=startNode.dependencies[i];
-      names.push(startNode.name);
-      findAllPaths(child,currentCost+child.duration);//recursively find the next node until base case is satisfied
-    }
-  }//end findAllPaths function
-
-
-  findAllPaths(firstStartNode,firstStartNode.duration);
-  //console.log(paths);
-  console.log(names);
-  return Math.min.apply(Math,paths);
-}
-
-//combines both forwardPassCalculation and backwardPassCalculation function
-//when given a topologically sorted event set, it will return the same result along with calculated earliest/latest start/end times
-function calculateTimes(topoEventSet){
-  let forwardPassResult=forwardPassCalculation(topoEventSet);
-  //console.log(forwardPassResult);
-  let backwardPassResult=backwardPassCalculation(forwardPassResult);
-  //console.log(backwardPassResult);
-  //let finalResult=calculateFloatTimes(backwardPassResult);
-
-  return calculateFloatTimes(backwardPassResult);
-}
-
-//forward pass calculation, calculates the earliest times for each of the nodes, adding them as properties
-function forwardPassCalculation(topoEventSet){
-  //console.log(topoEventSet);
-  let originalSet=clone(topoEventSet);//keeps an original record of dependencies
-  let finishedNodes=[];
-  let inProcessNodes=[];
-
-  //initialize the first node
-  inProcessNodes.push(topoEventSet.shift());
-
-
-  while(inProcessNodes.length>0){
-    let nodeU=inProcessNodes.shift();
-
-    //case for the first node
-    if(!nodeU.hasOwnProperty('earliestStart')){
-      nodeU.earliestStart=1
-    }
-
-    //calculate the earliest end time
-    nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;
-    //console.log(nodeU);
-    //console.log(inProcessNodes);
-
-
-    for(let i=0;i<topoEventSet.length;i++){//for each node in the topologically sorted node set...
-      let nodeV=topoEventSet[i];
-
-
-      if(checkForDependencyMatch(nodeV,nodeU)){//For each vertex v directly following u...
-        //calculate the earliest start times...
-        if(!nodeV.hasOwnProperty('earliestStart')){//if earliest start time isn't initialized yet...
-          //console.log(nodeV);
-          nodeV.earliestStart=(nodeU.earliestEnd+1);//calculate start time
-        }else if(nodeU.earliestEnd>nodeV.earliestStart){//else, compare start times (case where there are multiple edges
-          nodeV.earliestStart=(nodeU.earliestEnd+1);
-        }
-
-        //calculate the earliest end time...
-        nodeV.earliestEnd=(nodeV.earliestStart-1)+nodeV.duration;
-        ///console.log(nodeV);
-
-
-        //remove the edge/dependency
-        let index=topoEventSet[i].dependencies.indexOf(nodeU);
-        topoEventSet[i].dependencies.splice(index,1);
-
-        //push nodeV into inProcessNodes to turn into nodeU's
-        inProcessNodes.push(nodeV);
-      }
-    }
-
-    //checks if node already has been calculated due to multiple dependencies, might have an updated earliestStart/earliestEnd
-    if(contains(finishedNodes,nodeU)){
-      //console.log(nodeU);
-      let index=finishedNodes.indexOf(nodeU);
-      finishedNodes.splice(index,1,nodeU);
-      //console.log(finishedNodes);
-    }else{
-      finishedNodes.push(nodeU);
-    }
-    //console.log(inProcessNodes.length);
-  }
-
-  //add calculated times to originalSet
-  for(let i=0;i<originalSet.length;i++){
-    //console.log(i);
-    let node=originalSet[i];
-    //console.log(originalSet);
-    let temp=containsName(finishedNodes,node);
-    node.earliestStart=temp.earliestStart;
-    node.earliestEnd=temp.earliestEnd;
-  }
-
-  //console.log(finishedNodes);
-  //console.log(originalSet);
-  topoEventSet=originalSet;
-  return topoEventSet;
-}
-
-//backward pass calculation, calculates the latest times for each of the nodes, adding them as properties
-function backwardPassCalculation(forwardPassResult){
-  //let workingSet=clone(forwardPassResult.reverse());
-  let finishedNodes=[];
-  let nodesToProcess=[];
-
-  //initialize the first node 'U',calculate the latest times,
-  let nodeU=forwardPassResult.pop();
-  nodeU.latestEnd=nodeU.earliestEnd;
-  nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
-  //console.log(nodeU);
-
-  //console.log(workingSet);
-  while(nodeU.dependencies.length>0) {
-    //console.log(nodeU.dependencies[i]);
-    let nodeV=containsName(forwardPassResult,nodeU.dependencies[0]);
-    nodeU.dependencies.shift();//eliminate dependency
-
-    //calculate the latest end times...
-    if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
-      //console.log(nodeV);
-      nodeV.latestEnd = (nodeU.latestStart-1);//calculate latest end time
-    } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
-      nodeV.latestEnd = (nodeU.latestStart-1);
-    }
-    //console.log(nodeV);
-    //calculate the latest start time...
-    nodeV.latestStart = nodeV.latestEnd - (nodeV.duration-1);
-    //console.log(nodeV);
-
-    nodesToProcess.push(nodeV);
-
-    if(nodeU.dependencies.length===0){
-      finishedNodes.push(nodeU);
-      nodeU=nodesToProcess.shift();//assign a new node 'U'
-      //console.log(nodeU);
-    }
-
-    if(nodeU.dependencies.length===0&&nodesToProcess.length>0){//checks if the newly assigned nodeU is the beginning of the graph
-      for(let i=0;i<nodesToProcess.length;i++){
-        nodeU=nodesToProcess.shift();
-        if(nodeU.dependencies.length>0)break;
-        nodesToProcess.push(nodeU);
-      }
-    }
-  }
-
-  finishedNodes.push(nodesToProcess.shift());
-  //console.log(nodesToProcess);
-
-  //console.log(finishedNodes);
-  return finishedNodes;
-}
-
-//given a list of activities with calculated earliest/latest start/end times, will return a longest path list
-function longestPath(activityList){
-  let result=[];
-  for(let i=0;i<activityList.length;i++){
-    //console.log(i);
-    let condition1=activityList[i].earliestEnd-activityList[i].latestEnd===0;
-    let condition2=activityList[i].earliestStart-activityList[i].latestStart===0;
-
-    if(condition1&&condition2){
-      result.push(activityList[i]);
-    }
-  }
-
-  result.reverse();
+//main function for calculating times
+function calculateTimes(activitySet){
+  let result;
+  result=forwardPass(activitySet);
+  //console.log(result);
+  result=backwardPass(result);
+  //console.log(result);
+  result=calculateFloatTimes(result);
   return result;
 }
 
-//given object1, checks if object2 exist in object1's dependency list
-function checkForDependencyMatch(object1,object2){
-  for(let i=0; i<object1.dependencies.length; i++){
-    //console.log('checking');
-    //console.log(object1.dependencies[i]);
-    if(object1.dependencies[i]===object2)
-      //console.log('match');
+//forward pass calculations
+function forwardPass(activitySet){
+  let workingSet=clone(activitySet);
+  let finishedNodes=[];
+
+  while(workingSet.length>0){
+    let nodeU=workingSet.shift();
+
+    for(let i=0;i<workingSet.length;i++){
+      let nodeV=workingSet[i];
+      calculateTimesForwardPass(nodeU,nodeV);
+      removeDependency(nodeU,nodeV);
+    }
+    finishedNodes.push(nodeU);
+
+  }
+
+  //console.log(finishedNodes);
+  addCalculatedTimesForwardPass(activitySet,finishedNodes);
+
+  return activitySet;
+}
+
+//backward pass calculation
+function backwardPass(activitySet){
+  let workingSet=clone(activitySet);
+  workingSet.reverse();
+  let finishedNodes=[];
+  let firstNode=true;
+  //console.log(workingSet);
+
+
+
+  while(workingSet.length>0){
+    let nodeU=workingSet.shift();
+
+    //case if nodeU is the last node (latest end time not initialized)
+    if(!nodeU.hasOwnProperty('latestEnd')&&firstNode){
+      nodeU.latestEnd=nodeU.earliestEnd;
+      nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
+      firstNode=false;
+    }
+
+    for(let i=0;i<workingSet.nodeU.dependencies.length;i++){//todo herehereherehere
+      let nodeV=workingSet.dependencies[i];
+      calculateTimesBackwardPass(nodeU,nodeV);
+      removeDependency(nodeU,nodeV);
+    }
+    //console.log(nodeU);
+    finishedNodes.push(nodeU);
+  }
+  console.log(finishedNodes);
+  addCalculatedTimesBackwardPass(activitySet,finishedNodes);
+  return finishedNodes;
+}
+
+//checks if nodeU has a dependency of nodeV
+function hasDependency(nodeU,nodeV){
+  for(let i=0;i<nodeU.dependencies.length;i++){
+    let condition1=nodeU.dependencies[i].name===nodeV.name;
+    if(condition1){
       return true;
     }
-  return false;
-}
-
-//checks if an array has obj in it
-function contains(a, obj) {
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] === obj) {
-      return a[i];
-    }
   }
   return false;
 }
 
-//weak comparison
-function containsName(a,obj){
-  for (let i = 0; i < a.length; i++) {
-    if (a[i].name === obj.name) {
-      return a[i];
-    }
+//calculates est, eet
+function calculateTimesForwardPass(nodeU,nodeV){
+  //case if nodeU is the first node (earliest start time not initialized)
+  if(!nodeU.hasOwnProperty('earliestStart')){
+    nodeU.earliestStart=1;
+    nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;
   }
-  return false;
+
+  //checks if nodeU is a dependency of nodeV
+  if(!hasDependency(nodeV,nodeU)){
+    return;
+  }
+
+  //calculate the earliest start times...
+  if(!nodeV.hasOwnProperty('earliestStart')){//if earliest start time isn't initialized yet...
+    nodeV.earliestStart=(nodeU.earliestEnd+1);//calculate start time
+  }
+  else if(nodeU.earliestEnd>nodeV.earliestStart){//else, compare start times (case where there are multiple edges
+    nodeV.earliestStart=(nodeU.earliestEnd+1);
+  }
+
+  //calculate the earliest end time...
+  nodeV.earliestEnd=(nodeV.earliestStart-1)+nodeV.duration;
 }
 
+//calculate let,lst
+function calculateTimesBackwardPass(nodeU,nodeV){
+
+  //checks if nodeV is a dependency of nodeU
+
+  //console.log('comparing');
+  //console.log(nodeU);
+  //console.log(nodeV);
+  //console.log(hasDependency(nodeU,nodeV));
+  if(!hasDependency(nodeU,nodeV)){
+    return;
+  }
+
+  //calculate the latest end times...
+  if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
+    //nodeV.latestStart=0;//initialize latest start first to display order
+    nodeV.latestEnd = (nodeU.latestStart-1);//calculate latest end time
+  } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
+    nodeV.latestEnd = (nodeU.latestStart-1);
+  }
+  //console.log(nodeV);
+  //calculate the latest start time...
+  nodeV.latestStart = nodeV.latestEnd - (nodeV.duration-1);
+  //console.log(nodeV);
+}
+
+//calculate float times
+function calculateFloatTimes(activitySet){
+  for (let i = 0; i < activitySet.length; i++) {
+    activitySet[i].floatTime = activitySet[i].latestEnd - activitySet[i].earliestEnd;
+  }
+  return activitySet;
+}
+
+//remove the edge/dependency
+function removeDependency(nodeU,nodeV){
+  let index=nodeU.dependencies.indexOf(nodeV);
+  nodeU.dependencies.splice(index,1);
+}
+
+//adds new values to the original set (which still has dependencies)
+function addCalculatedTimesForwardPass(originalSet,workingSet) {
+  for(let i=0;i<originalSet.length;i++){
+    let newValues=workingSet[i];//todo, assumes that original set and working set is in same order
+    originalSet[i].earliestStart=newValues.earliestStart;
+    originalSet[i].earliestEnd=newValues.earliestEnd;
+  }
+  //console.log(originalSet);
+}
+
+function addCalculatedTimesBackwardPass(originalSet,workingSet){
+  for(let i=0;i<originalSet.length;i++){
+    let newValues=workingSet[i];//todo
+    originalSet.latestStart=newValues.latestStart;
+    originalSet.latestEnd=newValues.latestEnd;
+  }
+}
 //cloning objects
 //https://davidwalsh.name/javascript-clone
 function clone(src) {
@@ -391,3 +287,4 @@ function clone(src) {
   return mixin(r, src, clone);
 
 }
+
