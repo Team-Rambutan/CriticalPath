@@ -65,7 +65,8 @@
       Name: {{ event.name }} <br/>
       Description: {{event.description}} <br/>
       Duration: {{event.duration}} <br/>
-      Dependencies: {{event.dependencies | json}}
+      <!--Dependencies: {{event.dependencies | json}}-->
+      Dependencies: {{showDependencies(event.dependencies)}}
       <!--</ion-row>-->
       <div item-end>
         <button ion-button color="danger" icon-only (click)="removeActivity(event)">

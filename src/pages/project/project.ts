@@ -30,9 +30,8 @@ export class ProjectPage {
     duration: null
   };
   activityForm: FormGroup;
-
+  keys: any;
   submitAttempt: boolean = false;
-
 
   constructor(public navCtrl: NavController,public firebaseProvider: FirebaseProvider, public navParams: NavParams,public alertCtrl: AlertController,public formBuilder: FormBuilder) {
     this.item = navParams.get('item');
@@ -40,6 +39,7 @@ export class ProjectPage {
     this.events = this.firebaseProvider.getEvents(this.item);
     this.events.forEach(event => {
       console.log(event);
+
     })
     this.activityForm = formBuilder.group({
       name:['', Validators.compose([Validators.maxLength(50),Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=]*',), Validators.required])],
@@ -162,5 +162,16 @@ export class ProjectPage {
     });
     alert.present();
   }
+
+  showDependencies(dependencies) {
+    let dependString = '';
+    if(dependencies !== undefined) {
+      Object.keys(dependencies).forEach( key => {
+        dependString += dependencies[key].name + ' ';
+      });
+    }
+    return dependString;
+  }
+
 
 }
