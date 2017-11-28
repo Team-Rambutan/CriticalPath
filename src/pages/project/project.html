@@ -14,40 +14,40 @@
   <p>Enter an activity name, description, duration, and dependencies to add an activity.</p>
   <ion-list no-lines>
     <form [formGroup]="activityForm">
-      <ion-item>
-        <ion-label floating>Activity Name</ion-label>
-        <ion-input [(ngModel)]="newEvent.name" formControlName="name" type="text"
-                   [class.invalid]="!activityForm.controls.name.valid && (activityForm.controls.name.dirty)"></ion-input>
-      </ion-item>
+    <ion-item>
+      <ion-label floating>Activity Name</ion-label>
+      <ion-input [(ngModel)]="newEvent.name" formControlName="name" type="text"
+                 [class.invalid]="!activityForm.controls.name.valid && (activityForm.controls.name.dirty)"></ion-input>
+    </ion-item>
       <ion-item *ngIf="!activityForm.controls.name.valid  && (activityForm.controls.name.dirty)">
         <p class="error-msg">Please enter a valid name.</p>
       </ion-item>
 
-      <ion-item>
-        <ion-label floating>Description</ion-label>
-        <ion-input [(ngModel)]="newEvent.description" formControlName="description" type="text"
-                   [class.invalid]="!activityForm.controls.description.valid && (activityForm.controls.description.dirty)"></ion-input>
-      </ion-item>
+    <ion-item>
+      <ion-label floating>Description</ion-label>
+      <ion-input [(ngModel)]="newEvent.description" formControlName="description" type="text"
+                 [class.invalid]="!activityForm.controls.description.valid && (activityForm.controls.description.dirty)"></ion-input>
+    </ion-item>
       <ion-item
         *ngIf="!activityForm.controls.description.valid  && (activityForm.controls.description.dirty)">
         <p class="error-msg">Please enter a valid description.</p>
       </ion-item>
 
-      <ion-item>
-        <ion-label floating>Duration</ion-label>
-        <ion-input [(ngModel)]="newEvent.duration" formControlName="duration" type="number"
-                   [class.invalid]="!activityForm.controls.duration.valid && (activityForm.controls.duration.dirty)"></ion-input>
-      </ion-item>
+    <ion-item>
+      <ion-label floating>Duration</ion-label>
+      <ion-input [(ngModel)]="newEvent.duration" formControlName="duration" type="number"
+                 [class.invalid]="!activityForm.controls.duration.valid && (activityForm.controls.duration.dirty)"></ion-input>
+    </ion-item>
       <ion-item *ngIf="!activityForm.controls.duration.valid  && (activityForm.controls.duration.dirty)">
         <p class="error-msg">Please enter a valid duration.</p>
       </ion-item>
 
-      <ion-item>
-        <ion-label floating>Dependencies</ion-label>
-        <ion-select #C (ionChange)="setDependency(C.value)">
-          <ion-option *ngFor="let event of events | async" [value]="event"> {{event.name}}</ion-option>
-        </ion-select>
-      </ion-item>
+    <ion-item>
+      <ion-label floating>Dependencies</ion-label>
+      <ion-select  #C (ionChange)="setDependency(C.value)">
+        <ion-option *ngFor="let event of events | async" [value]="event"> {{event.name}}</ion-option>
+      </ion-select>
+    </ion-item>
 
       <ion-label>Dependencies</ion-label>
       <ion-list *ngFor="let dependency of dependencies">
@@ -56,22 +56,19 @@
     </form>
   </ion-list>
 
-  <button ion-button full color="primary" [disabled]="!activityForm.valid" (click)="addActivity(item)">Add Activity
-  </button>
+  <button ion-button full color="primary" [disabled]="!activityForm.valid" (click)="addActivity(item)">Add Activity</button>
 
-  <ion-list>
+    <ion-list>
     <ion-item *ngFor="let event of events | async">
-      <!--<ion-row>-->
-      Name: {{ event.name }} <br/>
-      Description: {{event.description}} <br/>
-      Duration: {{event.duration}} <br/>
-      Dependencies: {{event.dependencies | json}}
-      <!--</ion-row>-->
-      <div item-end>
-        <button ion-button color="danger" icon-only (click)="removeActivity(event)">
-          <ion-icon name="trash"></ion-icon>
-        </button>
-      </div>
+        <!--<ion-row>-->
+          Name: {{ event.name }} <br />
+          Description: {{event.description}} <br />
+          Duration: {{event.duration}} <br />
+          Dependencies: {{event.dependencies | json}}
+        <!--</ion-row>-->
+        <div item-end>
+        <button ion-button color="danger" icon-only (click)="removeActivity(event)"><ion-icon name="trash"></ion-icon></button>
+        </div>
     </ion-item>
   </ion-list>
 </ion-content>

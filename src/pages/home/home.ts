@@ -6,8 +6,6 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import { ProjectPage } from '../project/project';
 import { CritpathPage } from '../critpath/critpath';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HomeValidator } from  '../../validators/home';
 
 @Component({
   selector: 'page-home',
@@ -23,27 +21,20 @@ export class HomePage {
     name: 'This is a test',
     duration: 3
   };
-  projectForm: FormGroup;
-
-  submitAttempt: boolean = false;
 
 
-  constructor(public navCtrl: NavController, public firebaseProvider: FirebaseProvider, public alertCtrl: AlertController,public formBuilder: FormBuilder) {
+
+  constructor(public navCtrl: NavController, public firebaseProvider: FirebaseProvider, public alertCtrl: AlertController) {
     this.projects = this.firebaseProvider.getProjects();
     this.projects.forEach(project => {
       console.log(project);
     })
     //console.log(this.shoppingItems);
     //this.shoppingItems.subscribe(val => console.log(val));
-    this.projectForm = formBuilder.group({
-      project:['', Validators.compose([Validators.maxLength(30),Validators.required, Validators.pattern('[a-zA-Z 0-9.!@#$%^&*()_+-=]*',)])],
-
-    });
   }
 
   addItem() {
     this.firebaseProvider.addProject(this.newItem);
-    this.projectForm.reset();
   }
 
   removeItem(item) {
