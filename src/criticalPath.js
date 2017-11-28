@@ -70,8 +70,8 @@ exampleActivitySet.push(activityE);
 //console.log(exampleActivitySet);
 //endregion
 
-//console.log(calculateTimes(exampleActivitySet));
-calculateTimes(exampleActivitySet);
+console.log(calculateTimes(exampleActivitySet));
+//calculateTimes(exampleActivitySet);
 
 
 //main function for calculating times
@@ -110,34 +110,28 @@ function forwardPass(activitySet){
 
 //backward pass calculation
 function backwardPass(activitySet){
-  let workingSet=clone(activitySet);
-  workingSet.reverse();
+  activitySet.reverse();
   let finishedNodes=[];
-  let firstNode=true;
-  //console.log(workingSet);
+  //console.log(activitySet);
 
+  //first node initialization
+  let nodeU=activitySet[0];
+  nodeU.latestEnd=nodeU.earliestEnd;
+  nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
+  //console.log(nodeU);
 
-
-  while(workingSet.length>0){
-    let nodeU=workingSet.shift();
-
-    //case if nodeU is the last node (latest end time not initialized)
-    if(!nodeU.hasOwnProperty('latestEnd')&&firstNode){
-      nodeU.latestEnd=nodeU.earliestEnd;
-      nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
-      firstNode=false;
-    }
-
-    for(let i=0;i<workingSet.nodeU.dependencies.length;i++){//todo herehereherehere
-      let nodeV=workingSet.dependencies[i];
+  //all the other nodes
+  for(let i=0;i<activitySet.length;i++){
+    let nodeU=activitySet[i];
+    for(let j=0;j<nodeU.dependencies.length;j++) {
+      //console.log(nodeU.dependencies);
+      let nodeV=nodeU.dependencies[j];
+      //console.log(nodeV);
       calculateTimesBackwardPass(nodeU,nodeV);
-      removeDependency(nodeU,nodeV);
     }
-    //console.log(nodeU);
     finishedNodes.push(nodeU);
   }
-  console.log(finishedNodes);
-  addCalculatedTimesBackwardPass(activitySet,finishedNodes);
+  //console.log(finishedNodes);
   return finishedNodes;
 }
 
