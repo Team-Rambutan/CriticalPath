@@ -87,25 +87,20 @@ function calculateTimes(activitySet){
 
 //forward pass calculations
 function forwardPass(activitySet){
-  let workingSet=clone(activitySet);
+  let workingSet=activitySet;
   let finishedNodes=[];
-
   while(workingSet.length>0){
     let nodeU=workingSet.shift();
 
     for(let i=0;i<workingSet.length;i++){
       let nodeV=workingSet[i];
       calculateTimesForwardPass(nodeU,nodeV);
-      removeDependency(nodeU,nodeV);
     }
     finishedNodes.push(nodeU);
 
   }
-
   //console.log(finishedNodes);
-  addCalculatedTimesForwardPass(activitySet,finishedNodes);
-
-  return activitySet;
+  return finishedNodes;
 }
 
 //backward pass calculation
@@ -169,6 +164,7 @@ function calculateTimesForwardPass(nodeU,nodeV){
 
   //calculate the earliest end time...
   nodeV.earliestEnd=(nodeV.earliestStart-1)+nodeV.duration;
+  return nodeV;
 }
 
 //calculate let,lst
@@ -194,6 +190,7 @@ function calculateTimesBackwardPass(nodeU,nodeV){
   //console.log(nodeV);
   //calculate the latest start time...
   nodeV.latestStart = nodeV.latestEnd - (nodeV.duration-1);
+  return nodeV;
   //console.log(nodeV);
 }
 
