@@ -78,28 +78,30 @@ console.log(calculateTimes(exampleActivitySet));
 function calculateTimes(activitySet){
   let result;
   result=forwardPass(activitySet);
-  //console.log(result);
   result=backwardPass(result);
-  //console.log(result);
   result=calculateFloatTimes(result);
   return result;
 }
 
 //forward pass calculations
 function forwardPass(activitySet){
-  let workingSet=activitySet;
   let finishedNodes=[];
-  while(workingSet.length>0){
-    let nodeU=workingSet.shift();
 
-    for(let i=0;i<workingSet.length;i++){
-      let nodeV=workingSet[i];
+  //first node initialization
+  let nodeU=activitySet[0];
+  nodeU.earliestStart=1;
+  nodeU.earliestEnd=nodeU.earliestStart+nodeU.duration-1;
+
+  while(activitySet.length>0){
+    let nodeU=activitySet.shift();
+
+    for(let i=0;i<activitySet.length;i++){
+      let nodeV=activitySet[i];
       calculateTimesForwardPass(nodeU,nodeV);
     }
     finishedNodes.push(nodeU);
 
   }
-  //console.log(finishedNodes);
   return finishedNodes;
 }
 
@@ -107,26 +109,21 @@ function forwardPass(activitySet){
 function backwardPass(activitySet){
   activitySet.reverse();
   let finishedNodes=[];
-  //console.log(activitySet);
 
   //first node initialization
   let nodeU=activitySet[0];
   nodeU.latestEnd=nodeU.earliestEnd;
   nodeU.latestStart=nodeU.latestEnd-nodeU.duration+1;
-  //console.log(nodeU);
 
   //all the other nodes
   for(let i=0;i<activitySet.length;i++){
     let nodeU=activitySet[i];
     for(let j=0;j<nodeU.dependencies.length;j++) {
-      //console.log(nodeU.dependencies);
       let nodeV=nodeU.dependencies[j];
-      //console.log(nodeV);
       calculateTimesBackwardPass(nodeU,nodeV);
     }
     finishedNodes.push(nodeU);
   }
-  //console.log(finishedNodes);
   return finishedNodes;
 }
 
@@ -143,11 +140,6 @@ function hasDependency(nodeU,nodeV){
 
 //calculates est, eet
 function calculateTimesForwardPass(nodeU,nodeV){
-  //case if nodeU is the first node (earliest start time not initialized)
-  if(!nodeU.hasOwnProperty('earliestStart')){
-    nodeU.earliestStart=1;
-    nodeU.earliestEnd=(nodeU.earliestStart-1)+nodeU.duration;
-  }
 
   //checks if nodeU is a dependency of nodeV
   if(!hasDependency(nodeV,nodeU)){
@@ -169,29 +161,20 @@ function calculateTimesForwardPass(nodeU,nodeV){
 
 //calculate let,lst
 function calculateTimesBackwardPass(nodeU,nodeV){
-
   //checks if nodeV is a dependency of nodeU
-
-  //console.log('comparing');
-  //console.log(nodeU);
-  //console.log(nodeV);
-  //console.log(hasDependency(nodeU,nodeV));
   if(!hasDependency(nodeU,nodeV)){
     return;
   }
 
   //calculate the latest end times...
   if (!nodeV.hasOwnProperty('latestStart')) {//if latest start time isn't initialized yet...
-    //nodeV.latestStart=0;//initialize latest start first to display order
     nodeV.latestEnd = (nodeU.latestStart-1);//calculate latest end time
   } else if (nodeU.latestStart < nodeV.latestEnd) {//else, compare start times (case where there are multiple edges
     nodeV.latestEnd = (nodeU.latestStart-1);
   }
-  //console.log(nodeV);
   //calculate the latest start time...
   nodeV.latestStart = nodeV.latestEnd - (nodeV.duration-1);
   return nodeV;
-  //console.log(nodeV);
 }
 
 //calculate float times
@@ -201,81 +184,3 @@ function calculateFloatTimes(activitySet){
   }
   return activitySet;
 }
-
-//remove the edge/dependency
-function removeDependency(nodeU,nodeV){
-  let index=nodeU.dependencies.indexOf(nodeV);
-  nodeU.dependencies.splice(index,1);
-}
-
-//adds new values to the original set (which still has dependencies)
-function addCalculatedTimesForwardPass(originalSet,workingSet) {
-  for(let i=0;i<originalSet.length;i++){
-    let newValues=workingSet[i];//todo, assumes that original set and working set is in same order
-    originalSet[i].earliestStart=newValues.earliestStart;
-    originalSet[i].earliestEnd=newValues.earliestEnd;
-  }
-  //console.log(originalSet);
-}
-
-function addCalculatedTimesBackwardPass(originalSet,workingSet){
-  for(let i=0;i<originalSet.length;i++){
-    let newValues=workingSet[i];//todo
-    originalSet.latestStart=newValues.latestStart;
-    originalSet.latestEnd=newValues.latestEnd;
-  }
-}
-//cloning objects
-//https://davidwalsh.name/javascript-clone
-function clone(src) {
-  function mixin(dest, source, copyFunc) {
-    let name, s, i, empty = {};
-    for(name in source){
-      // the (!(name in empty) || empty[name] !== s) condition avoids copying properties in "source"
-      // inherited from Object.prototype.	 For example, if dest has a custom toString() method,
-      // don't overwrite it with the toString() method that source inherited from Object.prototype
-      s = source[name];
-      if(!(name in dest) || (dest[name] !== s && (!(name in empty) || empty[name] !== s))){
-        dest[name] = copyFunc ? copyFunc(s) : s;
-      }
-    }
-    return dest;
-  }
-
-  if(!src || typeof src != "object" || Object.prototype.toString.call(src) === "[object Function]"){
-    // null, undefined, any non-object, or function
-    return src;	// anything
-  }
-  if(src.nodeType && "cloneNode" in src){
-    // DOM Node
-    return src.cloneNode(true); // Node
-  }
-  if(src instanceof Date){
-    // Date
-    return new Date(src.getTime());	// Date
-  }
-  if(src instanceof RegExp){
-    // RegExp
-    return new RegExp(src);   // RegExp
-  }
-  let r, i, l;
-  if(src instanceof Array){
-    // array
-    r = [];
-    for(i = 0, l = src.length; i < l; ++i){
-      if(i in src){
-        r.push(clone(src[i]));
-      }
-    }
-    // we don't clone functions for performance reasons
-    //		}else if(d.isFunction(src)){
-    //			// function
-    //			r = function(){ return src.apply(this, arguments); };
-  }else{
-    // generic objects
-    r = src.constructor ? new src.constructor() : {};
-  }
-  return mixin(r, src, clone);
-
-}
-
